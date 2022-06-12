@@ -6,26 +6,33 @@ class Sprite{
         this.position = position
     }
     draw(){
-        ctx.drawImage(this.shape,this.position.x,this.position.y,this.width,this.height)
+        ctx.drawImage(
+            this.shape,
+            this.position.x,
+            this.position.y,
+            this.width,
+            this.height)
     }
     
 }
 
 class Player extends Sprite{
-    constructor(height,width,shape,position,
-        stats,pv,level,xp,xpToNextLvl,attack,skills){
-        super(height,width,shape,position)
-        
-        this.shapeRight = shapeRight
-        this.shapeDown = shapeDown
-        this.shapeUp = shapeUp
-        this.stats = stats
+    constructor(width,height,shape,position){
+        super(width,height,shape,position)
+        this.direction = 'right'
+        this.moving = false
+        this.frame = {
+            max :0,
+            val:3,
+            elapsed:0
+        }
+        /*this.stats = stats
         this.pv = pv
         this.level = level
         this.xp = xp
         this.xpToNextLvl = xpToNextLvl
         this.attack = attack
-        this.skills = skills
+        this.skills = skills*/
     }
     /* METHODS
     1/Move, different from mother
@@ -34,28 +41,27 @@ class Player extends Sprite{
     3/Draw
     */
     drawRight(){
-        ctx.drawImage(this.shapeRight,this.position.x,this.position.y,this.width,this.height)
-    }
-
-
-    move(key){
-        switch (key) {
-            case "ArrowLeft":
-                this.erase()
-                this.draw()
-                break;
-            case "ArrowRight":
-                this.erase()
-                this.drawRight()
-                break;
-            case "ArrowUp":
-                this.erase()
-                this.drawUp()
-                break;
-            case "ArrowDown":
-                this.erase()
-                this.drawDown()
-                break;
+        ctx.drawImage(
+            this.shape,
+            this.shape.width / 9 * this.frame.val,
+            0,
+            this.shape.width / 9,
+            this.shape.height,
+            this.position.x,
+            this.position.y,
+            this.width,
+            this.height,)
+        this.frame.elapsed ++
+        if (!this.moving){
+            this.frame.val = 3
+        }else{
+            if (this.frame.elapsed % 10 === 0){
+                if(this.frame.val < 7){
+                    this.frame.val ++
+                }else{
+                    this.frame.val = 4
+                }
+            }
         }
     }
 }
@@ -72,13 +78,13 @@ class Enemy extends Sprite{
     }
 
     move(){
-        if (this.position.x > (canvas.width/2 - charaImage.width/2)){
+        if (this.position.x > (canvas.width/2 - character.width/2)){
             this.position.x -= 1
-        }else if(this.position.x < (canvas.width/2 - charaImage.width/2)){
+        }else if(this.position.x < (canvas.width/2 - character.width/2)){
             this.position.x += 1}
-        if (this.position.y > (canvas.height/2 - charaImage.height/2)){
+        if (this.position.y > (canvas.height/2 - character.height/2)){
             this.position.y -= 1
-        }else if(this.position.y < (canvas.height/2 - charaImage.height/2)){
+        }else if(this.position.y < (canvas.height/2 - character.height/2)){
             this.position.y += 1}
     }
     /* METHODS

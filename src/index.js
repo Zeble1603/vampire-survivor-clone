@@ -8,8 +8,11 @@ const enemies = []
 const bgImage = new Image()
 bgImage.src = '/src/img/bg_forest.png'
 
-const charaImage = new Image()
-charaImage.src = '/src/img/chara/knight_f_idle_anim_f1.png'
+const charaImageRight = new Image()
+charaImageRight.src = '/src/img/chara/hero_right.png'
+
+const charaImageLeft = new Image()
+charaImageLeft.src = '/src/img/chara/hero_left.png'
 
 const vilainImage = new Image()
 vilainImage.src = '/src/img/vilains/big_demon_idle_anim_f0.png'
@@ -18,8 +21,8 @@ const background = new Sprite(
     7000,6860,bgImage,{x:-2560,y:-2026}
 )
 
-const character = new Sprite(
-    24,42,charaImage,{x:(canvas.width/2 - charaImage.width/2), y:(canvas.height/2-charaImage.height /2)}
+const character = new Player(
+    32,56,charaImageRight,{x:(canvas.width/2 - charaImageRight.width/9), y:(canvas.height/2-charaImageRight.height /2)}
 )
 
 const keys = {
@@ -60,7 +63,7 @@ function animate() {
 
     window.requestAnimationFrame(animate)
     background.draw()
-    character.draw()
+    character.drawRight()
     for (let enemy of enemies){
         enemy.draw()
         enemy.move()
@@ -78,19 +81,22 @@ function animate() {
             enemy.position.x += 2
         }
     }
-    
+    character.moving = false
     if(keys.up){
         background.position.y += 2
+        character.moving = true
     }
     if(keys.right){
         background.position.x -= 2
-       
-    }
+        character.moving = true
+    }   
     if(keys.down){
         background.position.y -= 2
+        character.moving = true
     }
     if(keys.left){
         background.position.x += 2
+        character.moving = true
     }
 }
 
