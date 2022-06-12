@@ -8,8 +8,8 @@ const enemies = []
 const bgImage = new Image()
 bgImage.src = '/src/img/bg_forest.png'
 
-const charaImageRight = new Image()
-charaImageRight.src = '/src/img/chara/hero_right.png'
+const charaImage = new Image()
+charaImage.src = '/src/img/chara/hero_right.png'
 
 const charaImageLeft = new Image()
 charaImageLeft.src = '/src/img/chara/hero_left.png'
@@ -22,7 +22,9 @@ const background = new Sprite(
 )
 
 const character = new Player(
-    32,56,charaImageRight,{x:(canvas.width/2 - charaImageRight.width/9), y:(canvas.height/2-charaImageRight.height /2)}
+    32,56,charaImage,
+    {right:charaImage,
+    left:charaImageLeft}
 )
 
 const keys = {
@@ -63,7 +65,7 @@ function animate() {
 
     window.requestAnimationFrame(animate)
     background.draw()
-    character.drawRight()
+    character.move()
     for (let enemy of enemies){
         enemy.draw()
         enemy.move()
@@ -89,6 +91,7 @@ function animate() {
     if(keys.right){
         background.position.x -= 2
         character.moving = true
+        character.direction = 'right'
     }   
     if(keys.down){
         background.position.y -= 2
@@ -97,11 +100,12 @@ function animate() {
     if(keys.left){
         background.position.x += 2
         character.moving = true
+        character.direction = 'left'
     }
 }
 
 animate()
-generateVilain()
+//generateVilain()
 
 window.addEventListener('keydown', (e)=>{
     switch (e.key) {

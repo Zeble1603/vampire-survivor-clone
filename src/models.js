@@ -17,8 +17,11 @@ class Sprite{
 }
 
 class Player extends Sprite{
-    constructor(width,height,shape,position){
-        super(width,height,shape,position)
+    constructor(width,height,shape,sprites){
+        super(width,height,shape)
+        this.position = {x:(canvas.width/2 - this.shape.width/9),
+        y:(canvas.height/2-this.shape.height /2)},
+        this.sprites = sprites
         this.direction = 'right'
         this.moving = false
         this.frame = {
@@ -34,32 +37,53 @@ class Player extends Sprite{
         this.attack = attack
         this.skills = skills*/
     }
-    /* METHODS
-    1/Move, different from mother
-    --> just flip the image from left to right
-    2/Erase
-    3/Draw
-    */
-    drawRight(){
-        ctx.drawImage(
-            this.shape,
-            this.shape.width / 9 * this.frame.val,
-            0,
-            this.shape.width / 9,
-            this.shape.height,
-            this.position.x,
-            this.position.y,
-            this.width,
-            this.height,)
-        this.frame.elapsed ++
-        if (!this.moving){
-            this.frame.val = 3
+    move(){
+        if (this.direction === 'right'){
+            this.shape = this.sprites.right
+            ctx.drawImage(
+                this.shape,
+                this.shape.width / 9 * this.frame.val,
+                0,
+                this.shape.width / 9,
+                this.shape.height,
+                this.position.x,
+                this.position.y,
+                this.width,
+                this.height,)
+            this.frame.elapsed ++
+            if (!this.moving){
+                this.frame.val = 3
+            }else{
+                if (this.frame.elapsed % 10 === 0){
+                    if(this.frame.val < 7){
+                        this.frame.val ++
+                    }else{
+                        this.frame.val = 4
+                    }
+                }
+            }
         }else{
-            if (this.frame.elapsed % 10 === 0){
-                if(this.frame.val < 7){
-                    this.frame.val ++
-                }else{
-                    this.frame.val = 4
+            this.shape = this.sprites.left
+            ctx.drawImage(
+                this.shape,
+                this.shape.width / 9 * this.frame.val,
+                0,
+                this.shape.width / 9,
+                this.shape.height,
+                this.position.x,
+                this.position.y,
+                this.width,
+                this.height,)
+            this.frame.elapsed ++
+            if (!this.moving){
+                this.frame.val = 5
+            }else{
+                if (this.frame.elapsed % 10 === 0){
+                    if(this.frame.val > 1){
+                        this.frame.val --
+                    }else{
+                        this.frame.val = 4
+                    }
                 }
             }
         }
@@ -74,7 +98,7 @@ class Enemy extends Sprite{
     }
     draw(){
         ctx.drawImage(this.shape,this.position.x,this.position.y,this.width,this.height)
-        console.log('draw')
+
     }
 
     move(){
