@@ -5,15 +5,13 @@ class Sprite{
         this.shape = shape
         this.position = position
     }
-
     draw(){
         ctx.drawImage(this.shape,this.position.x,this.position.y,this.width,this.height)
-
     }
     
 }
 
-class player extends Sprite{
+class Player extends Sprite{
     constructor(height,width,shape,position,
         stats,pv,level,xp,xpToNextLvl,attack,skills){
         super(height,width,shape,position)
@@ -62,11 +60,26 @@ class player extends Sprite{
     }
 }
 
-class enemy extends Sprite{
-    constructor(height,width,shape,x,y,pv,attack){
-        super(height,width,shape,x,y)
+class Enemy extends Sprite{
+    constructor(height,width,shape,position,pv,attack){
+        super(height,width,shape,position)
         this.pv = pv
         this.attack = attack
+    }
+    draw(){
+        ctx.drawImage(this.shape,this.position.x,this.position.y,this.width,this.height)
+        console.log('draw')
+    }
+
+    move(){
+        if (this.position.x > (canvas.width/2 - charaImage.width/2)){
+            this.position.x -= 1
+        }else if(this.position.x < (canvas.width/2 - charaImage.width/2)){
+            this.position.x += 1}
+        if (this.position.y > (canvas.height/2 - charaImage.height/2)){
+            this.position.y -= 1
+        }else if(this.position.y < (canvas.height/2 - charaImage.height/2)){
+            this.position.y += 1}
     }
     /* METHODS
     1/Move
@@ -75,7 +88,7 @@ class enemy extends Sprite{
     */
 }
 
-class object extends Sprite{
+class Object extends Sprite{
     constructor(height,width,shape,x,y,effect){
         super(height,width,shape,x,y)
         this.effect = effect
