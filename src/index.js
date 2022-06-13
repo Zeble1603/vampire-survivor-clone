@@ -17,6 +17,7 @@ charaImageLeft.src = '/src/img/chara/hero_left.png'
 const vilainImage = new Image()
 vilainImage.src = '/src/img/vilains/big_demon_idle_anim_f0.png'
 
+
 const background = new Sprite(
     7000,6860,bgImage,{x:-2560,y:-2026}
 )
@@ -25,6 +26,10 @@ const character = new Player(
     32,56,charaImage,
     {right:charaImage,
     left:charaImageLeft}
+)
+
+const swordAttach = new sword(
+    charaImage.width,charaImage.height,charaImage,{charaImage},
 )
 
 const keys = {
@@ -61,11 +66,14 @@ function generateVilain() {
     }, 1500);
 }
 
+
+
 function animate() {
 
-    window.requestAnimationFrame(animate)
+    let currentFrame = window.requestAnimationFrame(animate)
     background.draw()
     character.move()
+    //Enemies
     for (let enemy of enemies){
         enemy.draw()
         enemy.move()
@@ -74,7 +82,6 @@ function animate() {
         }
         if(keys.right){
             enemy.position.x -= 2
-            
         }
         if(keys.down){
             enemy.position.y -= 2
@@ -83,6 +90,7 @@ function animate() {
             enemy.position.x += 2
         }
     }
+    //Character
     character.moving = false
     if(keys.up){
         background.position.y += 2
@@ -101,17 +109,27 @@ function animate() {
         background.position.x += 2
         character.moving = true
         character.direction = 'left'
+    }  
+    //Attacks
+    if(currentFrame % swordAttach.frame === 0){
+        swordAttach.animation = true
+        swordAttach.animationStart = currentFrame
+    }
+    if (currentFrame === swordAttach.animationStart + 10){
+        swordAttach.animation = false
+    }
+    if(swordAttach.animation){
+        swordAttach.attack()
     }
 }
-
 animate()
-//generateVilain()
+
+generateVilain()
 
 window.addEventListener('keydown', (e)=>{
     switch (e.key) {
         case "w":
             keys.up = true
-            console.log("ok")
             break;
         case "a":
             keys.left = true

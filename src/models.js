@@ -29,13 +29,14 @@ class Player extends Sprite{
             val:3,
             elapsed:0
         }
-        /*this.stats = stats
-        this.pv = pv
-        this.level = level
-        this.xp = xp
-        this.xpToNextLvl = xpToNextLvl
-        this.attack = attack
-        this.skills = skills*/
+        this.weapon = []
+        this.skills = []
+        this.stats = {
+            pv:50,
+            lvl:1,
+            xp:0,
+            xpToNextLvl:50,
+        }
     }
     move(){
         if (this.direction === 'right'){
@@ -88,13 +89,14 @@ class Player extends Sprite{
             }
         }
     }
+
 }
 
 class Enemy extends Sprite{
-    constructor(height,width,shape,position,pv,attack){
+    constructor(height,width,shape,position,pv,strenght){
         super(height,width,shape,position)
         this.pv = pv
-        this.attack = attack
+        this.strenght = strenght
     }
     draw(){
         ctx.drawImage(this.shape,this.position.x,this.position.y,this.width,this.height)
@@ -102,13 +104,13 @@ class Enemy extends Sprite{
     }
 
     move(){
-        if (this.position.x > (canvas.width/2 - character.width/2)){
+        if (this.position.x > character.position.x){
             this.position.x -= 1
-        }else if(this.position.x < (canvas.width/2 - character.width/2)){
+        }else if(this.position.x < character.position.x){
             this.position.x += 1}
-        if (this.position.y > (canvas.height/2 - character.height/2)){
+        if (this.position.y > character.position.y){
             this.position.y -= 1
-        }else if(this.position.y < (canvas.height/2 - character.height/2)){
+        }else if(this.position.y < character.position.y){
             this.position.y += 1}
     }
     /* METHODS
@@ -146,15 +148,14 @@ class skills{
 
 }
 
-class weapon extends skills{
-    constructor(height,width,shape,x,y,name,description,image,lvl,effect,speed){
-    super(name,description,image,lvl,effect)
-    this.height = height
-    this.width = width
-    this.shape = shape
-    this.x = x
-    this.y = y
-    this.speed = speed
+class Weapon extends Sprite{
+    constructor(width,height,shape,sprites,position,name,description){
+    super(width,height,shape,position)
+    this.sprites = sprites
+    this.name = name
+    this.description = description
+    this.lvl = 1
+    this.damage = 0
     }
     /* METHODS
     1/Attack
@@ -162,4 +163,38 @@ class weapon extends skills{
     2/Add to skills 
     3/Lvl up 
     */
+}
+
+class sword extends Weapon{
+    constructor(width,height,shape,sprites){
+        super(width,height,shape,sprites)
+        this.position = {x:(canvas.width/2 - this.shape.width/9),
+        y:(character.position.y + character.height / 2)-character.height / 4}
+        this.frame = 200
+        this.animation = false
+        this.animationStart = 0
+        this.animationEnd = this.animationStart + 50
+
+    }
+    attack(){
+        if (character.direction === 'left'){
+            this.position.x = (character.position.x - this.width)
+            console.log('chara left')
+             
+        }else{
+            this.position.x = (character.position.x + character.width)
+            console.log('chara right')
+        }
+        ctx.drawImage(
+            this.shape,
+            0,
+            0,
+            this.shape.width,
+            this.shape.height,
+            this.position.x,
+            this.position.y,
+            this.width,
+            this.height,) 
+        
+    }                    
 }
