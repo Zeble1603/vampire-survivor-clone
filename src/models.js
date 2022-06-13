@@ -29,13 +29,15 @@ class Player extends Sprite{
             val:3,
             elapsed:0
         }
-        this.weapon = []
+        this.weapons = []
         this.skills = []
         this.stats = {
+            pvMax:50,
             pv:50,
-            lvl:1,
+            xpMax:50,
             xp:0,
-            xpToNextLvl:50,
+            lvl:1,  
+            strenght:1
         }
     }
     move(){
@@ -100,7 +102,6 @@ class Enemy extends Sprite{
     }
     draw(){
         ctx.drawImage(this.shape,this.position.x,this.position.y,this.width,this.height)
-
     }
 
     move(){
@@ -120,16 +121,29 @@ class Enemy extends Sprite{
     */
 }
 
-class Object extends Sprite{
-    constructor(height,width,shape,x,y,effect){
-        super(height,width,shape,x,y)
-        this.effect = effect
+class Item extends Sprite{
+    constructor(height,width,shape,position,type='xp'){
+        super(height,width,shape,position)
+        this.type = type
     }
-    /* METHODS
-    1/Erase 
-    2/Draw
-    3/Apply effect (heal & XP)
-    */
+
+    heal(player){
+        player.stats.pv += 30
+        if (player.stats.pv > player.stats.pvMax){
+            player.stats.pv = player.stats.pvMax
+        }
+    }
+
+    pex(player){
+        player.stats.xp += 10
+        if (player.stats.xp >= player.stats.xpMax){
+            player.stats.lvl +=1
+            player.stats.strenght += 0.1
+            player.stats.xp -= player.stats.xpMax
+
+        }
+    }
+    
 }
 
 class skills{
@@ -166,14 +180,14 @@ class Weapon extends Sprite{
 }
 
 class sword extends Weapon{
-    constructor(width,height,shape,sprites){
-        super(width,height,shape,sprites)
+    constructor(width,height,shape,sprites,damage){
+        super(width,height,shape,sprites,damage)
         this.position = {x:(character.position.x),
         y:(character.position.y + character.height / 2)-character.height / 4}
         this.frame = 100
         this.animation = false
         this.animationStart = 0
-        this.animationEnd = this.animationStart + 50
+        this.animationEnd = this.animationStart + 20
 
     }
     attack(){

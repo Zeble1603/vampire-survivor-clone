@@ -3,7 +3,8 @@ const ctx = canvas.getContext('2d')
 canvas.width = 1024
 canvas.height = 576
 
-const enemies = []
+const enemies = {}
+const loots = {}
 
 const bgImage = new Image()
 bgImage.src = '/src/img/bg_forest.png'
@@ -17,6 +18,11 @@ charaImageLeft.src = '/src/img/chara/hero_left.png'
 const vilainImage = new Image()
 vilainImage.src = '/src/img/vilains/big_demon_idle_anim_f0.png'
 
+const hpImage = new Image()
+hpImage.src = '/src/img/items/hpIcon.png'
+
+const xpImage = new Image()
+xpImage.src = '/src/img/items/xpPoint.png'
 
 const background = new Sprite(
     7000,6860,bgImage,{x:-2560,y:-2026}
@@ -29,7 +35,7 @@ const character = new Player(
 )
 
 const swordAttach = new sword(
-    142,28,charaImage,{charaImage},
+    142,28,charaImage,{charaImage},1,
 )
 
 const keys = {
@@ -40,30 +46,45 @@ const keys = {
 }
 
 function generateVilain() {
+    let counter = 1
     const intervalId = setInterval(() => {
-        let enemy = new Enemy(32,36,vilainImage,{x:0, y:0})
         let scenario = Math.floor(Math.random() * 4);
         let randomPositionX = Math.floor(Math.random() * canvas.width);
         let randomPositionY = Math.floor(Math.random() * canvas.height);
         switch (scenario) {
             case 2:
-                enemy.position = {x:canvas.width, y:randomPositionY}
-                enemies.push(enemy)    
+                enemies[`red${counter}`] = new Enemy(32,36,vilainImage,{x:canvas.width, y:randomPositionY},20,1)   
                 break;
             case 3:
-                enemy.position = {x:randomPositionX, y:canvas.height}
-                enemies.push(enemy) 
+                enemies[`red${counter}`] = new Enemy(32,36,vilainImage,{x:randomPositionX, y:canvas.height},20,1)
                 break;   
             case 4:
-                enemy.position = {x:0, y:randomPositionY}
-                enemies.push(enemy)  
+                enemies[`red${counter}`] = new Enemy(32,36,vilainImage,{x:0, y:randomPositionY},20,1) 
                 break;  
             default:
-                enemy.position = {x:randomPositionX, y:0}
-                enemies.push(enemy)      
+                enemies[`red${counter}`] = new Enemy(32,36,vilainImage,{x:randomPositionX, y:0},20,1)       
                 break;
         }
+        counter ++
     }, 1500);
+}
+
+function generateItems(deadBody){
+    let idGenerator = Math.floor(Math.random() * 1000);
+    let scenario = Math.floor(Math.random() * 11);
+    switch (scenario){
+        case 1:
+        loots[`hp${idGenerator}`] = new Item(32,32,hpImage,
+            {x:deadBody.position.x,
+                y:deadBody.position.y},'heal')
+        break  
+
+        default:
+        loots[`xp${idGenerator}`] = new Item(32,32,xpImage,
+                {x:deadBody.position.x,
+                    y:deadBody.position.y})
+
+    }
 }
 
 function checkCollisionOnPlayer(enemy,player){
@@ -72,34 +93,77 @@ function checkCollisionOnPlayer(enemy,player){
         enemy.position.x <= player.position.x + player.width){
         if(enemy.position.y + enemy.height >= player.position.y
             && enemy.position.y <= player.position.y){
-            console.log('PLAYER TOUCHED')        
+                player.stats.pv -= enemy.strenght
+                if (player.stats.pv <= 0){
+                    console.log('GAME OVER')
+                } 
         }else if(enemy.position.y <= player.position.y + player.height
             && enemy.position.y >= player.position.y){
-            console.log('PLAYER TOUCHED')  
+                player.stats.pv -= enemy.strenght
+                if (player.stats.pv <= 0){
+                    console.log('GAME OVER')
+                } 
             }
     }
 }
 
-function checkAttackOnEnemy(enemy,attack){
+function checkAttackOnEnemy(enemies,attack){
     //TODO: refactoriser ce charabiat 
-    if(enemy.position.x >= attack.position.x &&
-        enemy.position.x <= attack.position.x + attack.width){
-        if(enemy.position.y + enemy.height >= attack.position.y
-            && enemy.position.y <= attack.position.y){
-            console.log('ATTACK HITS')
-        }else if(enemy.position.y <= attack.position.y + attack.height
-            && enemy.position.y >= attack.position.y){
-            console.log('ATTACK HITS')  
+    for (enemy in enemies){
+        if(enemies[enemy].position.x >= attack.position.x &&
+            enemies[enemy].position.x <= attack.position.x + attack.width){
+            if(enemies[enemy].position.y + enemies[enemy].height >= attack.position.y
+                && enemies[enemy].position.y <= attack.position.y){
+                enemies[enemy].pv =- attack.damage
+                if (enemies[enemy].pv <= 0 ){
+                    generateItems(enemies[enemy])
+                    console.log(loots)
+                    delete enemies[enemy]
+                }
+            }else if(enemies[enemy].position.y <= attack.position.y + attack.height
+                && enemies[enemy].position.y >= attack.position.y){
+                    enemies[enemy].pv =- attack.damage
+                    if (enemies[enemy].pv <= 0 ){
+                    generateItems(enemies[enemy])
+                    console.log(loots)
+                    delete enemies[enemy]
+                }
             }
+        }
     }
 }
 
-
+function checkCollisionWithitems(items,player){
+    //TODO: refactoriser ce charabiat 
+    for (let item in items){
+        if(items[item].position.x >= player.position.x &&
+            items[item].position.x <= player.position.x + player.width){
+            if(items[item].position.y + items[item].height >= player.position.y
+                && items[item].position.y <= player.position.y){
+                if(items[item].type === 'heal'){
+                    items[item].heal(player)
+                    delete items[item]
+                }else{
+                    items[item].pex(player)
+                    delete items[item]
+                }
+                }
+            }else if(objects[item].position.y <= player.position.y + player.height
+                && items[item].position.y >= player.position.y){
+                if(items[item].type === 'heal'){
+                    items[item].heal(player)
+                }else{
+                    items[item].pex(player)
+                }
+            }
+        }
+}
 
 function animate() {
 
     let currentFrame = window.requestAnimationFrame(animate)
     background.draw()
+
     //Character
     character.move()
     character.moving = false
@@ -121,6 +185,7 @@ function animate() {
         character.moving = true
         character.direction = 'left'
     }  
+
     //Attacks
     if(currentFrame % swordAttach.frame === 0){
         swordAttach.animation = true
@@ -131,34 +196,47 @@ function animate() {
     }
     if(swordAttach.animation){
         swordAttach.attack()
-        for(enemy of enemies){
-            checkAttackOnEnemy(enemy,swordAttach)
-
-        }
-        
+        checkAttackOnEnemy(enemies,swordAttach)
     }
+    
     //Enemies
-    for (let enemy of enemies){
-        enemy.draw()
-        enemy.move()
+    for (const enemy in enemies){
+        enemies[enemy].draw()
+        enemies[enemy].move()
         if(keys.up){
-            enemy.position.y += 2
+            enemies[enemy].position.y += 2
         }
         if(keys.right){
-            enemy.position.x -= 2
+            enemies[enemy].position.x -= 2
         }
         if(keys.down){
-            enemy.position.y -= 2
+            enemies[enemy].position.y -= 2
         }
         if(keys.left){
-            enemy.position.x += 2
+            enemies[enemy].position.x += 2
         }
-        checkCollisionOnPlayer(enemy,character)
+        checkCollisionOnPlayer(enemies[enemy],character)
+    }
 
+    //Items
+    for (const item in loots){
+        loots[item].draw()
+        if(keys.up){
+            loots[item].position.y += 2
+        }
+        if(keys.right){
+            loots[item].position.x -= 2
+        }
+        if(keys.down){
+            loots[item].position.y -= 2
+        }
+        if(keys.left){
+            loots[item].position.x += 2
+        }
+        checkCollisionWithitems(loots[item],character)
     }
 }
 animate()
-
 generateVilain()
 
 window.addEventListener('keydown', (e)=>{
