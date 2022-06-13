@@ -108,9 +108,9 @@ class Enemy extends Sprite{
             this.position.x -= 1
         }else if(this.position.x < character.position.x){
             this.position.x += 1}
-        if (this.position.y > character.position.y){
+        if (this.position.y > (character.position.y + character.height / 2)-character.height / 4){
             this.position.y -= 1
-        }else if(this.position.y < character.position.y){
+        }else if(this.position.y < (character.position.y + character.height / 2)-character.height / 4){
             this.position.y += 1}
     }
     /* METHODS
@@ -168,9 +168,9 @@ class Weapon extends Sprite{
 class sword extends Weapon{
     constructor(width,height,shape,sprites){
         super(width,height,shape,sprites)
-        this.position = {x:(canvas.width/2 - this.shape.width/9),
+        this.position = {x:(character.position.x),
         y:(character.position.y + character.height / 2)-character.height / 4}
-        this.frame = 200
+        this.frame = 100
         this.animation = false
         this.animationStart = 0
         this.animationEnd = this.animationStart + 50
@@ -179,11 +179,8 @@ class sword extends Weapon{
     attack(){
         if (character.direction === 'left'){
             this.position.x = (character.position.x - this.width)
-            console.log('chara left')
-             
         }else{
-            this.position.x = (character.position.x + character.width)
-            console.log('chara right')
+            this.position.x = (character.position.x)
         }
         ctx.drawImage(
             this.shape,

@@ -29,7 +29,7 @@ const character = new Player(
 )
 
 const swordAttach = new sword(
-    charaImage.width,charaImage.height,charaImage,{charaImage},
+    142,28,charaImage,{charaImage},
 )
 
 const keys = {
@@ -66,31 +66,42 @@ function generateVilain() {
     }, 1500);
 }
 
+function checkCollisionOnPlayer(enemy,player){
+    //TODO: refactoriser ce charabiat 
+    if(enemy.position.x >= player.position.x &&
+        enemy.position.x <= player.position.x + player.width){
+        if(enemy.position.y + enemy.height >= player.position.y
+            && enemy.position.y <= player.position.y){
+            console.log('PLAYER TOUCHED')        
+        }else if(enemy.position.y <= player.position.y + player.height
+            && enemy.position.y >= player.position.y){
+            console.log('PLAYER TOUCHED')  
+            }
+    }
+}
+
+function checkAttackOnEnemy(enemy,attack){
+    //TODO: refactoriser ce charabiat 
+    if(enemy.position.x >= attack.position.x &&
+        enemy.position.x <= attack.position.x + attack.width){
+        if(enemy.position.y + enemy.height >= attack.position.y
+            && enemy.position.y <= attack.position.y){
+            console.log('ATTACK HITS')
+        }else if(enemy.position.y <= attack.position.y + attack.height
+            && enemy.position.y >= attack.position.y){
+            console.log('ATTACK HITS')  
+            }
+    }
+}
+
 
 
 function animate() {
 
     let currentFrame = window.requestAnimationFrame(animate)
     background.draw()
-    character.move()
-    //Enemies
-    for (let enemy of enemies){
-        enemy.draw()
-        enemy.move()
-        if(keys.up){
-            enemy.position.y += 2
-        }
-        if(keys.right){
-            enemy.position.x -= 2
-        }
-        if(keys.down){
-            enemy.position.y -= 2
-        }
-        if(keys.left){
-            enemy.position.x += 2
-        }
-    }
     //Character
+    character.move()
     character.moving = false
     if(keys.up){
         background.position.y += 2
@@ -120,6 +131,30 @@ function animate() {
     }
     if(swordAttach.animation){
         swordAttach.attack()
+        for(enemy of enemies){
+            checkAttackOnEnemy(enemy,swordAttach)
+
+        }
+        
+    }
+    //Enemies
+    for (let enemy of enemies){
+        enemy.draw()
+        enemy.move()
+        if(keys.up){
+            enemy.position.y += 2
+        }
+        if(keys.right){
+            enemy.position.x -= 2
+        }
+        if(keys.down){
+            enemy.position.y -= 2
+        }
+        if(keys.left){
+            enemy.position.x += 2
+        }
+        checkCollisionOnPlayer(enemy,character)
+
     }
 }
 animate()
