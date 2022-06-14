@@ -55,6 +55,7 @@ function toggleScreen(id,toggle){
 
 function startGame(){
     toggleScreen('start',false)
+    toggleScreen('canvas',true)
     ctx = canvas.getContext('2d')
     game.active = true
     animate()
@@ -62,6 +63,8 @@ function startGame(){
 }
 
 function endGame(){
+    let bodyElem = document.querySelector('body')
+    bodyElem.style.backgroundColor = 'red'
     enemies = {}
     loots = {}
     game.active = false
@@ -73,12 +76,15 @@ function endGame(){
 }
 
 function reStart(){
+    let bodyElem = document.querySelector('body')
+    bodyElem.style.backgroundColor = 'white'
     toggleScreen('game-over',false)
     toggleScreen('canvas',true)
     ctx = canvas.getContext('2d')
     character.reset()
     game.active = true
     animate()
+    generateVilain()
 }
 
 function generateVilain() {

@@ -1,3 +1,16 @@
+
+html, body {
+    height: 100%;
+}
+
+body{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+}
+
 #start{
     display: flex;
     flex-direction: column;
@@ -12,4 +25,21 @@
     justify-content: center;
 }
 
+#canvas{
+    display: none;
+}
 
+#button-try{
+    margin: 20px;
+    padding: 20px;
+    border: 3px black solid;
+    border-radius: 50px;
+}
+
+#start-button{
+    background-color: #48C2F9;
+    margin: 20px;
+    padding: 20px;
+    border: 5px #FFCE00 solid;
+    border-radius: 20px;
+}
