@@ -39,6 +39,7 @@ class Player extends Sprite{
             lvl:1,  
             strenght:1
         }
+        this.speed = 1
     }
     move(){
         if (this.direction === 'right'){
@@ -146,11 +147,6 @@ class Enemy extends Sprite{
             this.position.y += 40
         }
     }
-    /* METHODS
-    1/Move
-    2/Erase 
-    3/Draw    
-    */
 }
 
 class Item extends Sprite{
@@ -178,21 +174,76 @@ class Item extends Sprite{
     
 }
 
-class skills{
-    constructor(name,description,image,lvl,effect){
+class Skills{
+    constructor(name,image){
         this.name = name
-        this.description = description
         this.image = image
-        this.lvl = lvl
-        this.effect = effect
+        this.maxLvl = 9
     }  
-    /* METHODS
-    1/Apply effect (buff) 
-    2/Add to skills 
-    3/Lvl up 
-    */
-
 }
+
+class DamagesBuff extends Skills{
+    constructor(name,image){
+        super(name,image)
+        this.lvl = 1
+        this.value = 1.5
+        this.description = `Increases weapon damages by ${this.value} per rank`
+    }
+    applyBuff(attack){
+        attack.damage *= this.value
+    }
+}
+
+class RangeBuff extends Skills{
+    constructor(name,image){
+        super(name,image)
+        this.lvl = 1
+        this.value = 1
+        this.description = `Increases weapon range by ${this.value} per rank`
+    }
+    applyBuff(attack){
+        attack.width += this.value
+        attack.height += this.height
+    }
+}
+
+class CoolDownBuff extends Skills{
+    constructor(name,image){
+        super(name,image)
+        this.lvl = 1
+        this.value = 2
+        this.description = `Reduces weapon range by ${this.value} frame per rank`
+    }
+    applyBuff(attack){
+        attack.frame -= this.value
+    }
+}
+
+class ArmorBuff extends Skills{
+    constructor(name,image){
+        super(name,image)
+        this.lvl = 1
+        this.value = 1
+        this.description = `Reduces enemies damages by ${this.value} per rank`
+    }
+    applyBuff(enemies){
+        enemies.strenght -= this.value
+        this.value += 2
+    }
+}
+
+class SpeedBuff extends Skills{
+    constructor(name,image){
+        super(name,image)
+        this.lvl = 1
+        this.value = 0.1
+        this.description = `Increase character speed by ${this.value} per rank`
+    }
+    applyBuff(player){
+        player.speed += this.value
+    }
+}
+
 
 class Weapon extends Sprite{
     constructor(width,height,shape,sprites,position,name,description){
@@ -202,15 +253,9 @@ class Weapon extends Sprite{
     this.description = description
     this.lvl = 1
     }
-    /* METHODS
-    1/Attack
-    --> draw / erase / move 
-    2/Add to skills 
-    3/Lvl up 
-    */
 }
 
-class sword extends Weapon{
+class Sword extends Weapon{
     constructor(width,height,shape,sprites,damage){
         super(width,height,shape,sprites)
         this.position = {x:(character.position.x),
@@ -238,6 +283,6 @@ class sword extends Weapon{
             this.position.y,
             this.width,
             this.height,) 
-        
     }                    
 }
+

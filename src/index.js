@@ -37,8 +37,8 @@ const character = new Player(
     left:charaImageLeft}
 )
 
-const swordAttach = new sword(
-    142,28,charaImage,{charaImage},5)
+const swordAttach = new Sword(
+    152,38,charaImage,{charaImage},5)
 
 const keys = {
     up : false,
@@ -72,7 +72,6 @@ function endGame(){
     character.reset()
     toggleScreen('game-over',true)
     toggleScreen('canvas',false)
-    canvas.style.display = 'none'
 }
 
 function reStart(){
@@ -80,7 +79,6 @@ function reStart(){
     bodyElem.style.backgroundColor = 'white'
     toggleScreen('game-over',false)
     toggleScreen('canvas',true)
-    ctx = canvas.getContext('2d')
     character.reset()
     game.active = true
     animate()
@@ -245,20 +243,20 @@ function animate() {
     character.move()
     character.moving = false
     if(keys.up){
-        background.position.y += 2
+        background.position.y += (2 * character.speed)
         character.moving = true
     }
     if(keys.right){
-        background.position.x -= 2
+        background.position.x -= (2 * character.speed)
         character.moving = true
         character.direction = 'right'
     }   
     if(keys.down){
-        background.position.y -= 2
+        background.position.y -= (2 * character.speed)
         character.moving = true
     }
     if(keys.left){
-        background.position.x += 2
+        background.position.x += (2 * character.speed)
         character.moving = true
         character.direction = 'left'
     }  
@@ -282,16 +280,16 @@ function animate() {
         enemies[enemy].draw()
         enemies[enemy].move()
         if(keys.up){
-            enemies[enemy].position.y += 2
+            enemies[enemy].position.y += (2 * character.speed)
         }
         if(keys.right){
-            enemies[enemy].position.x -= 2
+            enemies[enemy].position.x -= (2 * character.speed)
         }
         if(keys.down){
-            enemies[enemy].position.y -= 2
+            enemies[enemy].position.y -= (2 * character.speed)
         }
         if(keys.left){
-            enemies[enemy].position.x += 2
+            enemies[enemy].position.x += (2 * character.speed)
         }
         checkCollisionOnPlayer(enemies[enemy],character)
     }
@@ -329,7 +327,7 @@ window.addEventListener('keydown', (e)=>{
             break;   
         case "s":
             keys.down = true
-            break;     
+            break;    
     }
 })
 window.addEventListener('keyup', (e)=>{
