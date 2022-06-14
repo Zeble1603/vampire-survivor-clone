@@ -117,7 +117,6 @@ function checkAttackOnEnemy(enemies,attack){
                 enemies[enemy].pv =- attack.damage
                 if (enemies[enemy].pv <= 0 ){
                     generateItems(enemies[enemy])
-                    console.log(loots)
                     delete enemies[enemy]
                 }
             }else if(enemies[enemy].position.y <= attack.position.y + attack.height
@@ -125,7 +124,6 @@ function checkAttackOnEnemy(enemies,attack){
                     enemies[enemy].pv =- attack.damage
                     if (enemies[enemy].pv <= 0 ){
                     generateItems(enemies[enemy])
-                    console.log(loots)
                     delete enemies[enemy]
                 }
             }
@@ -136,10 +134,35 @@ function checkAttackOnEnemy(enemies,attack){
 function checkCollisionWithitems(items,player){
     //TODO: refactoriser ce charabiat 
     for (let item in items){
-        if(items[item].position.x >= player.position.x &&
+        if(player.position.x >= items[item].position.x &&
+        player.position.x <= items[item].position.x + items[item].width){
+            if(player.position.y + player.height >= items[item].position.y
+            && player.position.y <= items[item].position.y){
+                console.log('item touched 1')
+                if(items[item].type === 'heal'){
+                    items[item].heal(player)
+                    delete items[item]
+                }else{
+                    items[item].pex(player)
+                    delete items[item]
+                }
+        }else if(player.position.y <= items[item].position.y + items[item].height
+            && player.position.y >= items[item].position.y){
+                console.log('item touched 2')
+                if(items[item].type === 'heal'){
+                    items[item].heal(player)
+                }else{
+                    items[item].pex(player)
+                } 
+            }
+        }
+    }
+        
+        /*if(items[item].position.x >= player.position.x &&
             items[item].position.x <= player.position.x + player.width){
             if(items[item].position.y + items[item].height >= player.position.y
                 && items[item].position.y <= player.position.y){
+                    console.log('item touched 1')
                 if(items[item].type === 'heal'){
                     items[item].heal(player)
                     delete items[item]
@@ -148,15 +171,16 @@ function checkCollisionWithitems(items,player){
                     delete items[item]
                 }
                 }
-            }else if(objects[item].position.y <= player.position.y + player.height
+            }else if(items[item].position.y <= player.position.y + player.height
                 && items[item].position.y >= player.position.y){
+                    console.log('item touched 2')
                 if(items[item].type === 'heal'){
                     items[item].heal(player)
                 }else{
                     items[item].pex(player)
                 }
             }
-        }
+        }*/
 }
 
 function animate() {
@@ -218,6 +242,7 @@ function animate() {
         checkCollisionOnPlayer(enemies[enemy],character)
     }
 
+
     //Items
     for (const item in loots){
         loots[item].draw()
@@ -233,8 +258,8 @@ function animate() {
         if(keys.left){
             loots[item].position.x += 2
         }
-        checkCollisionWithitems(loots[item],character)
     }
+    checkCollisionWithitems(loots,character)
 }
 animate()
 generateVilain()
