@@ -91,6 +91,25 @@ class Player extends Sprite{
             }
         }
     }
+    reset(){
+        this.direction = 'right'
+        this.moving = false
+        this.frame = {
+            max :0,
+            val:3,
+            elapsed:0
+        }
+        this.weapons = []
+        this.skills = []
+        this.stats = {
+            pvMax:50,
+            pv:50,
+            xpMax:50,
+            xp:0,
+            lvl:1,  
+            strenght:1
+        }
+    }
 
 }
 
@@ -113,6 +132,19 @@ class Enemy extends Sprite{
             this.position.y -= 1
         }else if(this.position.y < (character.position.y + character.height / 2)-character.height / 4){
             this.position.y += 1}
+    }
+
+    getPushed(directionX,directionY){
+        if(directionX === 'right'){
+            this.position.x += 40
+        }else{
+            this.position.x -= 40
+        }
+        if(directionY==='up'){
+            this.position.y -= 40
+        }else{
+            this.position.y += 40
+        }
     }
     /* METHODS
     1/Move
@@ -169,7 +201,6 @@ class Weapon extends Sprite{
     this.name = name
     this.description = description
     this.lvl = 1
-    this.damage = 0
     }
     /* METHODS
     1/Attack
@@ -181,9 +212,10 @@ class Weapon extends Sprite{
 
 class sword extends Weapon{
     constructor(width,height,shape,sprites,damage){
-        super(width,height,shape,sprites,damage)
+        super(width,height,shape,sprites)
         this.position = {x:(character.position.x),
         y:(character.position.y + character.height / 2)-character.height / 4}
+        this.damage = damage
         this.frame = 100
         this.animation = false
         this.animationStart = 0

@@ -1,10 +1,13 @@
 const canvas = document.getElementById('canvas')
-const ctx = canvas.getContext('2d')
-canvas.width = 1024
-canvas.height = 576
-
-const enemies = {}
-const loots = {}
+let ctx = canvas.getContext('2d')
+canvas.width = 1380
+canvas.height = 630
+let enemies = {}
+let loots = {}
+const game = {
+    active : false,
+    over : false,
+}
 
 const bgImage = new Image()
 bgImage.src = '/src/img/bg_forest.png'
@@ -35,14 +38,47 @@ const character = new Player(
 )
 
 const swordAttach = new sword(
-    142,28,charaImage,{charaImage},1,
-)
+    142,28,charaImage,{charaImage},5)
 
 const keys = {
     up : false,
     right : false,
     down : false,
     left : false, 
+}
+
+function toggleScreen(id,toggle){
+    let element = document.getElementById(id)
+    let display = (toggle) ? 'flex' : 'none'
+    element.style.display = display
+}
+
+function startGame(){
+    toggleScreen('start',false)
+    ctx = canvas.getContext('2d')
+    game.active = true
+    animate()
+    generateVilain()
+}
+
+function endGame(){
+    enemies = {}
+    loots = {}
+    game.active = false
+    background.position = {x:-2560,y:-2026}
+    character.reset()
+    toggleScreen('game-over',true)
+    toggleScreen('canvas',false)
+    canvas.style.display = 'none'
+}
+
+function reStart(){
+    toggleScreen('game-over',false)
+    toggleScreen('canvas',true)
+    ctx = canvas.getContext('2d')
+    character.reset()
+    game.active = true
+    animate()
 }
 
 function generateVilain() {
@@ -53,20 +89,23 @@ function generateVilain() {
         let randomPositionY = Math.floor(Math.random() * canvas.height);
         switch (scenario) {
             case 2:
-                enemies[`red${counter}`] = new Enemy(32,36,vilainImage,{x:canvas.width, y:randomPositionY},20,1)   
+                enemies[`red${counter}`] = new Enemy(32,36,vilainImage,{x:canvas.width, y:randomPositionY},5,1)   
                 break;
             case 3:
-                enemies[`red${counter}`] = new Enemy(32,36,vilainImage,{x:randomPositionX, y:canvas.height},20,1)
+                enemies[`red${counter}`] = new Enemy(32,36,vilainImage,{x:randomPositionX, y:canvas.height},5,1)
                 break;   
             case 4:
-                enemies[`red${counter}`] = new Enemy(32,36,vilainImage,{x:0, y:randomPositionY},20,1) 
+                enemies[`red${counter}`] = new Enemy(32,36,vilainImage,{x:0, y:randomPositionY},5,1) 
                 break;  
             default:
-                enemies[`red${counter}`] = new Enemy(32,36,vilainImage,{x:randomPositionX, y:0},20,1)       
+                enemies[`red${counter}`] = new Enemy(32,36,vilainImage,{x:randomPositionX, y:0},5,1)       
                 break;
         }
         counter ++
     }, 1500);
+    if(!game.active){
+        clearInterval(intervalId)
+    }
 }
 
 function generateItems(deadBody){
@@ -95,13 +134,13 @@ function checkCollisionOnPlayer(enemy,player){
             && enemy.position.y <= player.position.y){
                 player.stats.pv -= enemy.strenght
                 if (player.stats.pv <= 0){
-                    console.log('GAME OVER')
+                    endGame()  
                 } 
         }else if(enemy.position.y <= player.position.y + player.height
             && enemy.position.y >= player.position.y){
                 player.stats.pv -= enemy.strenght
                 if (player.stats.pv <= 0){
-                    console.log('GAME OVER')
+                    endGame()  
                 } 
             }
     }
@@ -113,18 +152,24 @@ function checkAttackOnEnemy(enemies,attack){
         if(enemies[enemy].position.x >= attack.position.x &&
             enemies[enemy].position.x <= attack.position.x + attack.width){
             if(enemies[enemy].position.y + enemies[enemy].height >= attack.position.y
-                && enemies[enemy].position.y <= attack.position.y){
-                enemies[enemy].pv =- attack.damage
+                && enemies[enemy].position.y <= attack.position.y){    
+                enemies[enemy].pv -= attack.damage
+                console.log(enemies[enemy].pv)
                 if (enemies[enemy].pv <= 0 ){
                     generateItems(enemies[enemy])
                     delete enemies[enemy]
+                }else{
+                    enemies[enemy].getPushed(character.direction,'up')
                 }
             }else if(enemies[enemy].position.y <= attack.position.y + attack.height
                 && enemies[enemy].position.y >= attack.position.y){
-                    enemies[enemy].pv =- attack.damage
+                    enemies[enemy].pv -= attack.damage
+                    console.log(enemies[enemy].pv)
                     if (enemies[enemy].pv <= 0 ){
                     generateItems(enemies[enemy])
                     delete enemies[enemy]
+                }else{
+                    enemies[enemy].getPushed(character.direction,'down')
                 }
             }
         }
@@ -184,8 +229,10 @@ function checkCollisionWithitems(items,player){
 }
 
 function animate() {
+    if(!game.active) return
 
     let currentFrame = window.requestAnimationFrame(animate)
+    console.log(currentFrame)
     background.draw()
 
     //Character
@@ -225,6 +272,7 @@ function animate() {
     
     //Enemies
     for (const enemy in enemies){
+        if(!game.active){break}
         enemies[enemy].draw()
         enemies[enemy].move()
         if(keys.up){
@@ -261,8 +309,6 @@ function animate() {
     }
     checkCollisionWithitems(loots,character)
 }
-animate()
-generateVilain()
 
 window.addEventListener('keydown', (e)=>{
     switch (e.key) {
