@@ -32,17 +32,21 @@ class Player extends Sprite{
         this.weapons = []
         this.skills = []
         this.stats = {
-            pvMax:50,
-            pv:50,
+            pvMax:200,
+            pv:200,
             xpMax:50,
             xp:0,
             lvl:1,  
             strenght:1
         }
         this.speed = 1
+        this.touched = false
     }
     move(){
         if (this.direction === 'right'){
+            if(this.touched){
+                this.shape = this.sprites.touchedRight
+            }
             this.shape = this.sprites.right
             ctx.drawImage(
                 this.shape,
@@ -67,6 +71,9 @@ class Player extends Sprite{
                 }
             }
         }else{
+            if(this.touched){
+                this.shape = this.sprites.touchedLeft
+            }
             this.shape = this.sprites.left
             ctx.drawImage(
                 this.shape,
@@ -103,13 +110,15 @@ class Player extends Sprite{
         this.weapons = []
         this.skills = []
         this.stats = {
-            pvMax:50,
-            pv:50,
+            pvMax:200,
+            pv:200,
             xpMax:50,
             xp:0,
             lvl:1,  
             strenght:1
         }
+        this.speed = 1
+        this.touched = false
     }
 
 }
@@ -244,6 +253,17 @@ class SpeedBuff extends Skills{
     }
 }
 
+class healthBuff extends Skills{
+    constructor(name,image){
+        super(name,image)
+        this.lvl = 1
+        this.value = 10
+        this.description = `Increase character health by ${this.value}% per rank`
+    }
+    applyBuff(player){
+        player.speed += this.value
+    }
+}
 
 class Weapon extends Sprite{
     constructor(width,height,shape,sprites,position,name,description){

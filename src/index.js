@@ -2,12 +2,6 @@ const canvas = document.getElementById('canvas')
 let ctx = canvas.getContext('2d')
 canvas.width = 1380
 canvas.height = 630
-let enemies = {}
-let loots = {}
-const game = {
-    active : false,
-    over : false,
-}
 
 const bgImage = new Image()
 bgImage.src = '/src/img/bg_forest.png'
@@ -18,15 +12,39 @@ charaImage.src = '/src/img/chara/hero_right.png'
 const charaImageLeft = new Image()
 charaImageLeft.src = '/src/img/chara/hero_left.png'
 
+const charaImageRed = new Image()
+charaImageRed.src = '/src/img/chara/red_hero_right.png'
+
+const charaImageLeftRed = new Image()
+charaImageLeftRed.src = '/src/img/chara/red_hero_left.png'
+
 const vilainImage = new Image()
 vilainImage.src = '/src/img/vilains/big_demon_idle_anim_f0.png'
 
+
+//Items images
 const hpImage = new Image()
 hpImage.src = '/src/img/items/hpIcon.png'
 
 const xpImage = new Image()
-xpImage.src = '/src/img/items/xpPoint.png'
+xpImage.src = '/src/img/items/xpPointYellow.png'
 
+const damagesBuffImage = new Image()
+damagesBuffImage.src = '/src/img/items/buff1.png'
+
+const rangeBuffImage = new Image()
+rangeBuffImage.src = '/src/img/items/buff2.png'
+
+const coolDownBuffImage = new Image()
+coolDownBuffImage.src = '/src/img/items/buff3.png'
+
+const armorBuffImage = new Image()
+armorBuffImage.src = '/src/img/items/buff4.png'
+
+const speedBuffImage = new Image()
+speedBuffImage.src = '/src/img/items/buff5.png'
+
+//Objects
 const background = new Sprite(
     7000,6860,bgImage,{x:-2560,y:-2026}
 )
@@ -34,19 +52,41 @@ const background = new Sprite(
 const character = new Player(
     32,56,charaImage,
     {right:charaImage,
-    left:charaImageLeft}
+    left:charaImageLeft,
+    touchedLeft: charaImageLeftRed,
+    touchedRight: charaImageRed}
 )
 
 const swordAttach = new Sword(
     152,38,charaImage,{charaImage},5)
 
+
+const damageBuff = new DamagesBuff('Lyre',damagesBuffImage)    
+
+const rangeBuff = new RangeBuff('Violin',rangeBuffImage)
+
+const cooldownBuff = new CoolDownBuff('Ocarina',coolDownBuffImage)
+
+const armorBuff = new ArmorBuff('Flute',armorBuffImage)
+
+const speedBuff = new SpeedBuff('Horn',speedBuffImage)
+
+//Lists, objects
+let enemies = {}
+let loots = {}
+let game = {
+    active : false,
+    over : false,
+}
 const keys = {
     up : false,
     right : false,
     down : false,
     left : false, 
 }
+const skills = [damageBuff,rangeBuff,cooldownBuff,armorBuff,speedBuff]
 
+//Functions
 function toggleScreen(id,toggle){
     let element = document.getElementById(id)
     let display = (toggle) ? 'flex' : 'none'
@@ -67,9 +107,9 @@ function endGame(){
     bodyElem.style.backgroundColor = 'red'
     enemies = {}
     loots = {}
+    ctx = null
     game.active = false
     background.position = {x:-2560,y:-2026}
-    character.reset()
     toggleScreen('game-over',true)
     toggleScreen('canvas',false)
 }
@@ -77,6 +117,7 @@ function endGame(){
 function reStart(){
     let bodyElem = document.querySelector('body')
     bodyElem.style.backgroundColor = 'white'
+    ctx = canvas.getContext('2d')
     toggleScreen('game-over',false)
     toggleScreen('canvas',true)
     character.reset()
@@ -87,29 +128,31 @@ function reStart(){
 
 function generateVilain() {
     let counter = 1
-    const intervalId = setInterval(() => {
+
+    let intervalVilainId = setInterval(() => {
+        console.log(`TEST GENERATE VILAIN GAME IS ACTIVE ??? ${game.active}`)
         let scenario = Math.floor(Math.random() * 4);
         let randomPositionX = Math.floor(Math.random() * canvas.width);
         let randomPositionY = Math.floor(Math.random() * canvas.height);
         switch (scenario) {
             case 2:
-                enemies[`red${counter}`] = new Enemy(32,36,vilainImage,{x:canvas.width, y:randomPositionY},5,1)   
+                enemies[`red${counter}`] = new Enemy(32,36,vilainImage,{x:canvas.width, y:randomPositionY},10,1)   
                 break;
             case 3:
-                enemies[`red${counter}`] = new Enemy(32,36,vilainImage,{x:randomPositionX, y:canvas.height},5,1)
+                enemies[`red${counter}`] = new Enemy(32,36,vilainImage,{x:randomPositionX, y:canvas.height},10,1)
                 break;   
             case 4:
-                enemies[`red${counter}`] = new Enemy(32,36,vilainImage,{x:0, y:randomPositionY},5,1) 
+                enemies[`red${counter}`] = new Enemy(32,36,vilainImage,{x:0, y:randomPositionY},10,1) 
                 break;  
             default:
-                enemies[`red${counter}`] = new Enemy(32,36,vilainImage,{x:randomPositionX, y:0},5,1)       
+                enemies[`red${counter}`] = new Enemy(32,36,vilainImage,{x:randomPositionX, y:0},10,1)       
                 break;
         }
         counter ++
+        if(!game.active){
+            clearInterval(intervalVilainId)
+        }
     }, 1500);
-    if(!game.active){
-        clearInterval(intervalId)
-    }
 }
 
 function generateItems(deadBody){
@@ -136,17 +179,21 @@ function checkCollisionOnPlayer(enemy,player){
         enemy.position.x <= player.position.x + player.width){
         if(enemy.position.y + enemy.height >= player.position.y
             && enemy.position.y <= player.position.y){
+                player.touched = true
                 player.stats.pv -= enemy.strenght
                 if (player.stats.pv <= 0){
                     endGame()  
                 } 
         }else if(enemy.position.y <= player.position.y + player.height
             && enemy.position.y >= player.position.y){
+                player.touched = true
                 player.stats.pv -= enemy.strenght
                 if (player.stats.pv <= 0){
                     endGame()  
                 } 
             }
+    }else{
+        player.touched = false
     }
 }
 
@@ -187,7 +234,6 @@ function checkCollisionWithitems(items,player){
         player.position.x <= items[item].position.x + items[item].width){
             if(player.position.y + player.height >= items[item].position.y
             && player.position.y <= items[item].position.y){
-                console.log('item touched 1')
                 if(items[item].type === 'heal'){
                     items[item].heal(player)
                     delete items[item]
@@ -197,7 +243,6 @@ function checkCollisionWithitems(items,player){
                 }
         }else if(player.position.y <= items[item].position.y + items[item].height
             && player.position.y >= items[item].position.y){
-                console.log('item touched 2')
                 if(items[item].type === 'heal'){
                     items[item].heal(player)
                 }else{
@@ -206,38 +251,17 @@ function checkCollisionWithitems(items,player){
             }
         }
     }
-        
-        /*if(items[item].position.x >= player.position.x &&
-            items[item].position.x <= player.position.x + player.width){
-            if(items[item].position.y + items[item].height >= player.position.y
-                && items[item].position.y <= player.position.y){
-                    console.log('item touched 1')
-                if(items[item].type === 'heal'){
-                    items[item].heal(player)
-                    delete items[item]
-                }else{
-                    items[item].pex(player)
-                    delete items[item]
-                }
-                }
-            }else if(items[item].position.y <= player.position.y + player.height
-                && items[item].position.y >= player.position.y){
-                    console.log('item touched 2')
-                if(items[item].type === 'heal'){
-                    items[item].heal(player)
-                }else{
-                    items[item].pex(player)
-                }
-            }
-        }*/
+}
+
+function lvlUp() {
+    
 }
 
 function animate() {
     if(!game.active) return
-
     let currentFrame = window.requestAnimationFrame(animate)
-    console.log(currentFrame)
     background.draw()
+
 
     //Character
     character.move()
