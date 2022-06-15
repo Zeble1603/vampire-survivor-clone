@@ -2,6 +2,10 @@ const canvas = document.getElementById('canvas')
 let ctx = canvas.getContext('2d')
 canvas.width = 1380
 canvas.height = 630
+ctx.font = '32px Gothic';
+ctx.fillStyle = "white";
+ctx.textAlign = "center";
+
 
 const bgImage = new Image()
 bgImage.src = '/src/img/bg_forest.png'
@@ -60,6 +64,7 @@ const character = new Player(
 const swordAttach = new Sword(
     152,38,charaImage,{charaImage},5)
 
+character.weapons.push(swordAttach)
 
 const damageBuff = new DamagesBuff('Lyre',damagesBuffImage)    
 
@@ -254,14 +259,48 @@ function checkCollisionWithitems(items,player){
 }
 
 function lvlUp() {
+    let choiceList = []
+    character.stats.pv += character.stats.pvMax * 25/100
+    if(character.stats.pv > character.stats.pvMax){
+        character.stats.pv = character.stats.pvMax
+    }
+    if(character.skills.length <= 3){
+        let randomIndex1 = Math.floor(Math.random()*skills.length)
+        let randomIndex2 = Math.floor(Math.random()*skills.length)
+        choiceList.push(skills[randomIndex1],skills[randomIndex2])
+    }else{
+        let randomIndex1 = Math.floor(Math.random()*character.skills.length)
+        let randomIndex2 = Math.floor(Math.random()*character.skills.length)
+        choiceList.push(character.skills[randomIndex1],character.skills[randomIndex2])
+    }
     
+    /*Définir la fonction drawLvlUpScreen qui nous permet de générer l'écran de sélection
+    La fonction renvoie le choix du joueur --> un skill, qui possède donc une methode 
+    applyBuff(player) que l'on invoquera plus bas pour appliquer les effets du buff
+    */
+    let result = drawLvlUpScreen(choiceList)
+    result.applyBuff(character)
+
+
+}
+
+function drawLvlUpScreen(skillsOptions){
+    
+}
+
+function drawStats(){
+    ctx.fillText(`${character.stats.pv} / ${character.stats.pvMax}`, 1200, 50);
+    ctx.fillText(`${character.stats.xp} / ${character.stats.xpMax}`, 1200, 100);
+    ctx.fillText(`Lv : ${character.stats.lvl}`, 1200, 150);
+
 }
 
 function animate() {
     if(!game.active) return
+    
     let currentFrame = window.requestAnimationFrame(animate)
     background.draw()
-
+    drawStats()
 
     //Character
     character.move()

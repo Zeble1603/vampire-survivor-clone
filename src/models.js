@@ -37,7 +37,8 @@ class Player extends Sprite{
             xpMax:50,
             xp:0,
             lvl:1,  
-            strenght:1
+            strenght:1,
+            armor:0,
         }
         this.speed = 1
         this.touched = false
@@ -183,88 +184,6 @@ class Item extends Sprite{
     
 }
 
-class Skills{
-    constructor(name,image){
-        this.name = name
-        this.image = image
-        this.maxLvl = 9
-    }  
-}
-
-class DamagesBuff extends Skills{
-    constructor(name,image){
-        super(name,image)
-        this.lvl = 1
-        this.value = 1.5
-        this.description = `Increases weapon damages by ${this.value} per rank`
-    }
-    applyBuff(attack){
-        attack.damage *= this.value
-    }
-}
-
-class RangeBuff extends Skills{
-    constructor(name,image){
-        super(name,image)
-        this.lvl = 1
-        this.value = 1
-        this.description = `Increases weapon range by ${this.value} per rank`
-    }
-    applyBuff(attack){
-        attack.width += this.value
-        attack.height += this.height
-    }
-}
-
-class CoolDownBuff extends Skills{
-    constructor(name,image){
-        super(name,image)
-        this.lvl = 1
-        this.value = 2
-        this.description = `Reduces weapon range by ${this.value} frame per rank`
-    }
-    applyBuff(attack){
-        attack.frame -= this.value
-    }
-}
-
-class ArmorBuff extends Skills{
-    constructor(name,image){
-        super(name,image)
-        this.lvl = 1
-        this.value = 1
-        this.description = `Reduces enemies damages by ${this.value} per rank`
-    }
-    applyBuff(enemies){
-        enemies.strenght -= this.value
-        this.value += 2
-    }
-}
-
-class SpeedBuff extends Skills{
-    constructor(name,image){
-        super(name,image)
-        this.lvl = 1
-        this.value = 0.1
-        this.description = `Increase character speed by ${this.value} per rank`
-    }
-    applyBuff(player){
-        player.speed += this.value
-    }
-}
-
-class healthBuff extends Skills{
-    constructor(name,image){
-        super(name,image)
-        this.lvl = 1
-        this.value = 10
-        this.description = `Increase character health by ${this.value}% per rank`
-    }
-    applyBuff(player){
-        player.speed += this.value
-    }
-}
-
 class Weapon extends Sprite{
     constructor(width,height,shape,sprites,position,name,description){
     super(width,height,shape,position)
@@ -304,5 +223,92 @@ class Sword extends Weapon{
             this.width,
             this.height,) 
     }                    
+}
+
+class Skills{
+    constructor(name,image){
+        this.name = name
+        this.image = image
+        this.maxLvl = 9
+    }  
+}
+
+class DamagesBuff extends Skills{
+    constructor(name,image){
+        super(name,image)
+        this.lvl = 1
+        this.value = 5
+        this.description = `Increases weapon damages by ${this.value} per rank`
+    }
+    applyBuff(player){
+        for (attack of player.weapons){
+            attack.damage += this.value
+        } 
+    }
+}
+
+class RangeBuff extends Skills{
+    constructor(name,image){
+        super(name,image)
+        this.lvl = 1
+        this.value = 1
+        this.description = `Increases weapon range by ${this.value} per rank`
+    }
+    applyBuff(player){
+        for (attack of player.weapons){
+            attack.width += this.value
+            attack.height += this.height
+        }
+    }
+}
+
+class CoolDownBuff extends Skills{
+    constructor(name,image){
+        super(name,image)
+        this.lvl = 1
+        this.value = 2
+        this.description = `Reduces weapon range by ${this.value} frame per rank`
+    }
+    applyBuff(player){
+        for (attack of player.weapons){
+            attack.frame -= this.value
+        }
+    }
+}
+
+class ArmorBuff extends Skills{
+    constructor(name,image){
+        super(name,image)
+        this.lvl = 1
+        this.value = 2
+        this.description = `Reduces enemies damages by 2% per rank`
+    }
+    applyBuff(player){
+        player.stats.armor += this.value
+    }
+}
+
+class SpeedBuff extends Skills{
+    constructor(name,image){
+        super(name,image)
+        this.lvl = 1
+        this.value = 0.1
+        this.description = `Increase character speed by ${this.value} per rank`
+    }
+    applyBuff(player){
+        player.speed += this.value
+    }
+}
+
+class healthBuff extends Skills{
+    constructor(name,image){
+        super(name,image)
+        this.lvl = 1
+        this.value = 0.1
+        this.description = `Increase character health by 10% per rank`
+    }
+    applyBuff(player){
+        player.stats.pvMax += player.stats.pvMax*this.value
+    }
 }
 
