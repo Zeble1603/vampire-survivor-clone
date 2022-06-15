@@ -91,15 +91,18 @@ let game = {
     over : false,
     lvlUpScreen : false,
 }
+
 const keys = {
     up : false,
     right : false,
     down : false,
     left : false, 
 }
+
 const skills = [damageBuff,rangeBuff,cooldownBuff,armorBuff,speedBuff]
-const choiceList = []
-let skillSelection
+
+let choiceList = []
+let skillSelection = ""
 
 //Functions
 function toggleScreen(id,toggle){
@@ -113,6 +116,8 @@ function startGame(){
     toggleScreen('canvas',true)
     ctx = canvas.getContext('2d')
     game.active = true
+    game.over = false
+    game.lvlUpScreen = false
     animate()
     generateVilain()
 }
@@ -252,6 +257,7 @@ function checkCollisionWithitems(items,player){
                 }else{
                     let isLvlUp = items[item].pex(player)
                     if(isLvlUp){
+                        skillSelection = ""
                         lvlUp()
                     }
                     delete items[item]
@@ -264,6 +270,7 @@ function checkCollisionWithitems(items,player){
                 }else{
                     let isLvlUp = items[item].pex(player)
                     if(isLvlUp){
+                        skillSelection = ""
                         lvlUp()
                     }
                     delete items[item]
@@ -274,47 +281,45 @@ function checkCollisionWithitems(items,player){
 }
 
 function lvlUp() {
-
-    character.stats.pv += character.stats.pvMax * 25/100
-    if(character.stats.pv > character.stats.pvMax){
-        character.stats.pv = character.stats.pvMax
-    }
-    if(character.skills.length <= 3){
-        let randomIndex1 = Math.floor(Math.random()*skills.length)
-        let randomIndex2 = Math.floor(Math.random()*skills.length)
-        if (randomIndex1 === randomIndex2){
-            randomIndex2 = (randomIndex2 === skills.length -1) ? randomIndex2-1 : randomIndex2+1
-        }
-        choiceList.push(skills[randomIndex1],skills[randomIndex2])
+    if(skillSelection){
+        game.lvlUpScreen = false
+        game.active = true
+        skillSelection.applyBuff(character)
+        choiceList = []
+        skillSelection = ""
+        generateVilain()
+        animate()
     }else{
-        let randomIndex1 = Math.floor(Math.random()*character.skills.length)
-        let randomIndex2 = Math.floor(Math.random()*character.skills.length)
-        if (randomIndex1 === randomIndex2){
-            randomIndex2 = (randomIndex2 === character.skills.length -1) ? randomIndex2-1 : randomIndex2+1
+        character.stats.pv += character.stats.pvMax * 25/100
+        if(character.stats.pv > character.stats.pvMax){
+            character.stats.pv = character.stats.pvMax
         }
-        choiceList.push(character.skills[randomIndex1],character.skills[randomIndex2])
+        if(character.skills.length <= 3){
+            let randomIndex1 = Math.floor(Math.random()*skills.length)
+            let randomIndex2 = Math.floor(Math.random()*skills.length)
+            if (randomIndex1 === randomIndex2){
+                randomIndex2 = (randomIndex2 === skills.length -1) ? randomIndex2-1 : randomIndex2+1
+            }
+            choiceList.push(skills[randomIndex1],skills[randomIndex2])
+        }else{
+            let randomIndex1 = Math.floor(Math.random()*character.skills.length)
+            let randomIndex2 = Math.floor(Math.random()*character.skills.length)
+            if (randomIndex1 === randomIndex2){
+                randomIndex2 = (randomIndex2 === character.skills.length -1) ? randomIndex2-1 : randomIndex2+1
+            }
+            choiceList.push(character.skills[randomIndex1],character.skills[randomIndex2])
+        }
+        game.active = false
+        game.lvlUpScreen = true
+        drawLvlUpScreen()
     }
-    game.active = false
-    game.lvlUpScreen = true
-    /*Définir la fonction drawLvlUpScreen qui nous permet de générer l'écran de sélection
-    La fonction renvoie le choix du joueur --> un skill, qui possède donc une methode 
-    applyBuff(player) que l'on invoquera plus bas pour appliquer les effets du buff
-    */
-    let result = drawLvlUpScreen()
-    console.log(result)
+    
     //result.applyBuff(character)
 }
 
 function drawLvlUpScreen(){
-
-    if(!game.lvlUpScreen){
-        return
-    } 
+    if(!game.lvlUpScreen) return
     window.requestAnimationFrame(drawLvlUpScreen)
-    const selection = {
-        selectedSkill : choiceList[0],
-    }
-
     const firstOption = choiceList[0]
     const secondOption = choiceList[1]
     ctx.fillStyle = "#48C2F9";
@@ -368,25 +373,18 @@ function drawLvlUpScreen(){
     ctx.textAlign = "start";
     ctx.fillText(`${secondOption.description}`, (canvas.width/2 - 162), (canvas.height/2 + 80)); 
     
-    window.addEventListener('keydown', (e)=>{
+    /*window.addEventListener('keydown', (e)=>{
         switch (e.key) {
             case "w":
-                selection.selectedSkill = choiceList[0],
+                skillSelection = firstOption,
                 selector.position.y = canvas.height/2 - 90
-                console.log(`w // ${choiceList[0]}`)
                 break;  
             case "s":
-                selection.selectedSkill = choiceList[1],
+                skillSelection = secondOption,
                 selector.position.y = canvas.height/2 + 70
-                console.log(`s // ${choiceList[1]}`)
                 break;   
-            case "Enter":
-            case "Space":
-                skillSelection = selection.selectedSkill
-                game.lvlUpScreen = false 
-                game.active = true
         }
-    })
+    })*/
 }
 
 function drawStats(){
@@ -482,6 +480,10 @@ window.addEventListener('keydown', (e)=>{
     switch (e.key) {
         case "w":
             keys.up = true
+            if(game.lvlUpScreen){
+                skillSelection = choiceList[0],
+                selector.position.y = canvas.height/2 - 90
+            } 
             break;
         case "a":
             keys.left = true
@@ -491,7 +493,19 @@ window.addEventListener('keydown', (e)=>{
             break;   
         case "s":
             keys.down = true
-            break;    
+            
+            if(game.lvlUpScreen){
+                skillSelection = choiceList[1],
+                selector.position.y = canvas.height/2 + 70
+            } 
+            break;   
+        case 'p':
+            game.active = false     
+            break
+        case "Enter":
+            if(game.lvlUpScreen){
+                lvlUp()
+            }      
     }
 })
 window.addEventListener('keyup', (e)=>{
@@ -507,6 +521,7 @@ window.addEventListener('keyup', (e)=>{
             break;   
         case "s":
             keys.down = false
-            break;     
+            break;    
+                 
     }
 })

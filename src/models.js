@@ -243,7 +243,7 @@ class DamagesBuff extends Skills{
         this.description = `Increases weapon damages by ${this.value} per rank`
     }
     applyBuff(player){
-        for (attack of player.weapons){
+        for (let attack of player.weapons){
             attack.damage += this.value
         } 
     }
@@ -257,7 +257,7 @@ class RangeBuff extends Skills{
         this.description = `Increases weapon range by ${this.value} per rank`
     }
     applyBuff(player){
-        for (attack of player.weapons){
+        for (let attack of player.weapons){
             attack.width += this.value
             attack.height += this.height
         }
@@ -269,10 +269,10 @@ class CoolDownBuff extends Skills{
         super(name,image)
         this.lvl = 1
         this.value = 2
-        this.description = `Reduces weapon range by ${this.value} frame per rank`
+        this.description = `Reduces weapon cooldown by ${this.value} frame per rank`
     }
     applyBuff(player){
-        for (attack of player.weapons){
+        for (let attack of player.weapons){
             attack.frame -= this.value
         }
     }
