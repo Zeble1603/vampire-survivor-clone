@@ -6,6 +6,8 @@ ctx.font = '32px Gothic';
 ctx.fillStyle = "white";
 ctx.textAlign = "center";
 
+const selectorImage = new Image()
+selectorImage.src = './src/img/items/selector.png'
 
 const bgImage = new Image()
 bgImage.src = './src/img/bg_forest.png'
@@ -53,6 +55,11 @@ const background = new Sprite(
     7000,6860,bgImage,{x:-2560,y:-2026}
 )
 
+const selector = new Sprite(42,35,selectorImage,{
+    x:canvas.width/2 - 200,
+    y:canvas.height/2 - 90,
+})
+
 const character = new Player(
     32,56,charaImage,
     {right:charaImage,
@@ -76,12 +83,13 @@ const armorBuff = new ArmorBuff('Flute',armorBuffImage)
 
 const speedBuff = new SpeedBuff('Horn',speedBuffImage)
 
-//Lists, objects
+//Lists
 let enemies = {}
 let loots = {}
 let game = {
     active : false,
     over : false,
+    lvlUpScreen : false,
 }
 const keys = {
     up : false,
@@ -90,6 +98,8 @@ const keys = {
     left : false, 
 }
 const skills = [damageBuff,rangeBuff,cooldownBuff,armorBuff,speedBuff]
+const choiceList = []
+let skillSelection
 
 //Functions
 function toggleScreen(id,toggle){
@@ -135,7 +145,6 @@ function generateVilain() {
     let counter = 1
 
     let intervalVilainId = setInterval(() => {
-        console.log(`TEST GENERATE VILAIN GAME IS ACTIVE ??? ${game.active}`)
         let scenario = Math.floor(Math.random() * 4);
         let randomPositionX = Math.floor(Math.random() * canvas.width);
         let randomPositionY = Math.floor(Math.random() * canvas.height);
@@ -210,7 +219,6 @@ function checkAttackOnEnemy(enemies,attack){
             if(enemies[enemy].position.y + enemies[enemy].height >= attack.position.y
                 && enemies[enemy].position.y <= attack.position.y){    
                 enemies[enemy].pv -= attack.damage
-                console.log(enemies[enemy].pv)
                 if (enemies[enemy].pv <= 0 ){
                     generateItems(enemies[enemy])
                     delete enemies[enemy]
@@ -220,7 +228,6 @@ function checkAttackOnEnemy(enemies,attack){
             }else if(enemies[enemy].position.y <= attack.position.y + attack.height
                 && enemies[enemy].position.y >= attack.position.y){
                     enemies[enemy].pv -= attack.damage
-                    console.log(enemies[enemy].pv)
                     if (enemies[enemy].pv <= 0 ){
                     generateItems(enemies[enemy])
                     delete enemies[enemy]
@@ -243,15 +250,23 @@ function checkCollisionWithitems(items,player){
                     items[item].heal(player)
                     delete items[item]
                 }else{
-                    items[item].pex(player)
+                    let isLvlUp = items[item].pex(player)
+                    if(isLvlUp){
+                        lvlUp()
+                    }
                     delete items[item]
                 }
         }else if(player.position.y <= items[item].position.y + items[item].height
             && player.position.y >= items[item].position.y){
                 if(items[item].type === 'heal'){
                     items[item].heal(player)
+                    delete items[item]
                 }else{
-                    items[item].pex(player)
+                    let isLvlUp = items[item].pex(player)
+                    if(isLvlUp){
+                        lvlUp()
+                    }
+                    delete items[item]
                 } 
             }
         }
@@ -259,7 +274,7 @@ function checkCollisionWithitems(items,player){
 }
 
 function lvlUp() {
-    let choiceList = []
+
     character.stats.pv += character.stats.pvMax * 25/100
     if(character.stats.pv > character.stats.pvMax){
         character.stats.pv = character.stats.pvMax
@@ -267,25 +282,111 @@ function lvlUp() {
     if(character.skills.length <= 3){
         let randomIndex1 = Math.floor(Math.random()*skills.length)
         let randomIndex2 = Math.floor(Math.random()*skills.length)
+        if (randomIndex1 === randomIndex2){
+            randomIndex2 = (randomIndex2 === skills.length -1) ? randomIndex2-1 : randomIndex2+1
+        }
         choiceList.push(skills[randomIndex1],skills[randomIndex2])
     }else{
         let randomIndex1 = Math.floor(Math.random()*character.skills.length)
         let randomIndex2 = Math.floor(Math.random()*character.skills.length)
+        if (randomIndex1 === randomIndex2){
+            randomIndex2 = (randomIndex2 === character.skills.length -1) ? randomIndex2-1 : randomIndex2+1
+        }
         choiceList.push(character.skills[randomIndex1],character.skills[randomIndex2])
     }
-    
+    game.active = false
+    game.lvlUpScreen = true
     /*Définir la fonction drawLvlUpScreen qui nous permet de générer l'écran de sélection
     La fonction renvoie le choix du joueur --> un skill, qui possède donc une methode 
     applyBuff(player) que l'on invoquera plus bas pour appliquer les effets du buff
     */
-    let result = drawLvlUpScreen(choiceList)
-    result.applyBuff(character)
-
-
+    let result = drawLvlUpScreen()
+    console.log(result)
+    //result.applyBuff(character)
 }
 
-function drawLvlUpScreen(skillsOptions){
+function drawLvlUpScreen(){
 
+    if(!game.lvlUpScreen){
+        return
+    } 
+    window.requestAnimationFrame(drawLvlUpScreen)
+    const selection = {
+        selectedSkill : choiceList[0],
+    }
+
+    const firstOption = choiceList[0]
+    const secondOption = choiceList[1]
+    ctx.fillStyle = "#48C2F9";
+    ctx.fillRect((canvas.width/2 - 200), (canvas.height/2 - 225), 400, 450);
+    ctx.beginPath();
+    ctx.lineWidth = "3";
+    ctx.strokeStyle = "#FFCE00";
+    ctx.rect((canvas.width/2 - 200), (canvas.height/2 - 225), 400, 450);
+    ctx.stroke();
+
+    ctx.font = '32px Gothic';
+    ctx.fillStyle = "white";
+    ctx.textAlign = "center";
+    ctx.fillText(`Level up !!`, canvas.width/2, (canvas.height/2 - 190));
+
+    ctx.beginPath();
+    ctx.lineWidth = "3";
+    ctx.strokeStyle = "#FFCE00";
+    ctx.rect((canvas.width/2 - 175), (canvas.height/2 - 155), 350, 150);
+    ctx.stroke();
+    ctx.rect((canvas.width/2 - 175), (canvas.height/2 + 5 ), 350, 150);
+    ctx.stroke();
+
+    selector.draw()
+    
+    //First skill of the list
+    ctx.drawImage(firstOption.image,
+        (canvas.width/2 - 162),
+        (canvas.height/2 - 142),
+        32,35)
+    ctx.font = '20px Gothic';
+    ctx.fillStyle = "#FFCE00";
+    ctx.textAlign = "start";
+    ctx.fillText(`${firstOption.name}`, (canvas.width/2 - 120), (canvas.height/2 - 116));    
+    ctx.font = '18px Gothic';
+    ctx.fillStyle = "white";
+    ctx.textAlign = "start";
+    ctx.fillText(`${firstOption.description}`, (canvas.width/2 - 162), (canvas.height/2 - 80)); 
+
+    //Second skill of the list
+    ctx.drawImage(secondOption.image,
+        (canvas.width/2 - 162),
+        (canvas.height/2 + 18),
+        32,35)
+    ctx.font = '20px Gothic';
+    ctx.fillStyle = "#FFCE00";
+    ctx.textAlign = "start";
+    ctx.fillText(`${secondOption.name}`, (canvas.width/2 - 120), (canvas.height/2 + 44));     
+    ctx.font = '18px Gothic';
+    ctx.fillStyle = "white";
+    ctx.textAlign = "start";
+    ctx.fillText(`${secondOption.description}`, (canvas.width/2 - 162), (canvas.height/2 + 80)); 
+    
+    window.addEventListener('keydown', (e)=>{
+        switch (e.key) {
+            case "w":
+                selection.selectedSkill = choiceList[0],
+                selector.position.y = canvas.height/2 - 90
+                console.log(`w // ${choiceList[0]}`)
+                break;  
+            case "s":
+                selection.selectedSkill = choiceList[1],
+                selector.position.y = canvas.height/2 + 70
+                console.log(`s // ${choiceList[1]}`)
+                break;   
+            case "Enter":
+            case "Space":
+                skillSelection = selection.selectedSkill
+                game.lvlUpScreen = false 
+                game.active = true
+        }
+    })
 }
 
 function drawStats(){

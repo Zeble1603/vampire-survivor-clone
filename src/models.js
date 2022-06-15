@@ -178,8 +178,10 @@ class Item extends Sprite{
             player.stats.lvl +=1
             player.stats.strenght += 0.1
             player.stats.xp -= player.stats.xpMax
-
+            player.stats.xpMax = Math.floor(player.stats.xpMax*1.5)
+            return true
         }
+        return false
     }
     
 }
