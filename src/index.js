@@ -8,45 +8,45 @@ ctx.textAlign = "center";
 
 
 const bgImage = new Image()
-bgImage.src = '/src/img/bg_forest.png'
+bgImage.src = './src/img/bg_forest.png'
 
 const charaImage = new Image()
-charaImage.src = '/src/img/chara/hero_right.png'
+charaImage.src = './src/img/chara/hero_right.png'
 
 const charaImageLeft = new Image()
-charaImageLeft.src = '/src/img/chara/hero_left.png'
+charaImageLeft.src = './src/img/chara/hero_left.png'
 
 const charaImageRed = new Image()
-charaImageRed.src = '/src/img/chara/red_hero_right.png'
+charaImageRed.src = './src/img/chara/red_hero_right.png'
 
 const charaImageLeftRed = new Image()
-charaImageLeftRed.src = '/src/img/chara/red_hero_left.png'
+charaImageLeftRed.src = './src/img/chara/red_hero_left.png'
 
 const vilainImage = new Image()
-vilainImage.src = '/src/img/vilains/big_demon_idle_anim_f0.png'
+vilainImage.src = './src/img/vilains/big_demon_idle_anim_f0.png'
 
 
 //Items images
 const hpImage = new Image()
-hpImage.src = '/src/img/items/hpIcon.png'
+hpImage.src = './src/img/items/hpIcon.png'
 
 const xpImage = new Image()
-xpImage.src = '/src/img/items/xpPointYellow.png'
+xpImage.src = './src/img/items/xpPointYellow.png'
 
 const damagesBuffImage = new Image()
-damagesBuffImage.src = '/src/img/items/buff1.png'
+damagesBuffImage.src = './src/img/items/buff1.png'
 
 const rangeBuffImage = new Image()
-rangeBuffImage.src = '/src/img/items/buff2.png'
+rangeBuffImage.src = './src/img/items/buff2.png'
 
 const coolDownBuffImage = new Image()
-coolDownBuffImage.src = '/src/img/items/buff3.png'
+coolDownBuffImage.src = './src/img/items/buff3.png'
 
 const armorBuffImage = new Image()
-armorBuffImage.src = '/src/img/items/buff4.png'
+armorBuffImage.src = './src/img/items/buff4.png'
 
 const speedBuffImage = new Image()
-speedBuffImage.src = '/src/img/items/buff5.png'
+speedBuffImage.src = './src/img/items/buff5.png'
 
 //Objects
 const background = new Sprite(
@@ -285,7 +285,7 @@ function lvlUp() {
 }
 
 function drawLvlUpScreen(skillsOptions){
-    
+
 }
 
 function drawStats(){
