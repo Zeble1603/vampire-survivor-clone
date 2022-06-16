@@ -100,6 +100,7 @@ let game = {
     active : false,
     over : false,
     lvlUpScreen : false,
+    victory:false,
 }
 
 const keys = {
@@ -108,7 +109,6 @@ const keys = {
     down : false,
     left : false, 
 }
-
 
 //Functions
 function toggleScreen(id,toggle){
@@ -131,16 +131,18 @@ function startGame(){
 
 function endGame(){
     let bodyElem = document.querySelector('body')
-    bodyElem.style.backgroundColor = 'red'
-    clearTimeout(intervalTimer)
-    seconds = 0
-    minutes = 0
+    if(game.victory){
+        bodyElem.style.backgroundColor = '#48C2F9'
+        toggleScreen('victory',true)
+    }else{
+        bodyElem.style.backgroundColor = 'red'
+        toggleScreen('game-over',true)
+    }
     enemies = {}
     loots = {}
     ctx = null
     game.active = false
     background.position = {x:-2560,y:-2026}
-    toggleScreen('game-over',true)
     toggleScreen('canvas',false)
 }
 
@@ -148,12 +150,17 @@ function reStart(){
     let bodyElem = document.querySelector('body')
     bodyElem.style.backgroundColor = 'white'
     ctx = canvas.getContext('2d')
+    toggleScreen('victory',false)
     toggleScreen('game-over',false)
     toggleScreen('canvas',true)
     character.reset()
+    game.victory = false
     game.active = true
-    addToChrono()
+    clearTimeout(intervalTimer)
+    seconds = 0
+    minutes = 0
     animate()
+    addToChrono()
     generateVilain()
 }
 
@@ -162,6 +169,10 @@ function tick(){
     if (seconds >= 60) {
         seconds = 0;
         minutes++;
+    }
+    if(minutes === 10){
+        game.victory = true
+        endGame()
     }
 }
 
@@ -422,7 +433,6 @@ function drawStats(){
 
 function animate() {
     if(!game.active) return
-    
     let currentFrame = window.requestAnimationFrame(animate)
     background.draw()
     drawStats()
@@ -501,6 +511,7 @@ function animate() {
     }
     checkCollisionWithitems(loots,character)
 }
+
 
 window.addEventListener('keydown', (e)=>{
     switch (e.key) {
