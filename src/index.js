@@ -200,7 +200,7 @@ function tick(){
         seconds = 0;
         minutes++;
     }
-    if(minutes === 5){
+    if(minutes === 1){
         game.victory = true
         endGame()
     }
@@ -664,6 +664,10 @@ window.addEventListener('keyup', (e)=>{
         case "s":
             keys.down = false
             break;    
+        case 'p':
+            game.active = true     
+            animate()
+            break     
                  
     }
 })
