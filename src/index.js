@@ -27,6 +27,11 @@ charaImageLeftRed.src = './src/img/chara/red_hero_left.png'
 const vilainImage = new Image()
 vilainImage.src = './src/img/vilains/big_demon_idle_anim_f0.png'
 
+const attackRightImage = new Image()
+attackRightImage.src = './src/img/attack/right/attackRight.png'
+
+const attackLeftImage = new Image()
+attackLeftImage.src = '/src/img/attack/left/attackLeft.png'
 
 //Items images
 const hpImage = new Image()
@@ -71,8 +76,13 @@ const character = new Player(
     touchedRight: charaImageRed}
 )
 
+attackRightImage
+attackLeftImage
 const swordAttach = new Sword(
-    152,38,charaImage,{charaImage},5)
+    70,54,attackRightImage,
+    {right:attackRightImage,
+        left:attackLeftImage
+    },5)
 
 character.weapons.push(swordAttach)
 
@@ -271,26 +281,28 @@ function checkCollisionOnPlayer(enemy,player){
 
 function checkAttackOnEnemy(enemies,attack){
     //TODO: refactoriser ce charabiat 
-    for (enemy in enemies){
-        if(enemies[enemy].position.x >= attack.position.x &&
-            enemies[enemy].position.x <= attack.position.x + attack.width){
-            if(enemies[enemy].position.y + enemies[enemy].height >= attack.position.y
-                && enemies[enemy].position.y <= attack.position.y){    
-                enemies[enemy].pv -= attack.damage
-                if (enemies[enemy].pv <= 0 ){
-                    generateItems(enemies[enemy])
-                    delete enemies[enemy]
-                }else{
-                    enemies[enemy].getPushed(character.direction,'up')
-                }
-            }else if(enemies[enemy].position.y <= attack.position.y + attack.height
-                && enemies[enemy].position.y >= attack.position.y){
+    if(attack.animation){
+        for (enemy in enemies){
+            if(enemies[enemy].position.x >= attack.position.x &&
+                enemies[enemy].position.x <= attack.position.x + attack.width){
+                if(enemies[enemy].position.y + enemies[enemy].height >= attack.position.y
+                    && enemies[enemy].position.y <= attack.position.y){    
                     enemies[enemy].pv -= attack.damage
                     if (enemies[enemy].pv <= 0 ){
-                    generateItems(enemies[enemy])
-                    delete enemies[enemy]
-                }else{
-                    enemies[enemy].getPushed(character.direction,'down')
+                        generateItems(enemies[enemy])
+                        delete enemies[enemy]
+                    }else{
+                        enemies[enemy].getPushed(character.direction,'up')
+                    }
+                }else if(enemies[enemy].position.y <= attack.position.y + attack.height
+                    && enemies[enemy].position.y >= attack.position.y){
+                        enemies[enemy].pv -= attack.damage
+                        if (enemies[enemy].pv <= 0 ){
+                        generateItems(enemies[enemy])
+                        delete enemies[enemy]
+                    }else{
+                        enemies[enemy].getPushed(character.direction,'down')
+                    }
                 }
             }
         }
@@ -469,13 +481,15 @@ function animate() {
         swordAttach.animation = true
         swordAttach.animationStart = currentFrame
     }
-    if (currentFrame === swordAttach.animationStart + 10){
+    
+
+    if (currentFrame === swordAttach.animationStart + 15){
         swordAttach.animation = false
     }
-    if(swordAttach.animation){
-        swordAttach.attack()
-        checkAttackOnEnemy(enemies,swordAttach)
-    }
+
+    swordAttach.attack()
+    checkAttackOnEnemy(enemies,swordAttach)
+    
     
     //Enemies
     for (const enemy in enemies){

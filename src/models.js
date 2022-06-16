@@ -116,7 +116,8 @@ class Player extends Sprite{
             xpMax:50,
             xp:0,
             lvl:1,  
-            strenght:1
+            strenght:1,
+            armor:0,
         }
         this.speed = 1
         this.touched = false
@@ -206,24 +207,61 @@ class Sword extends Weapon{
         this.animation = false
         this.animationStart = 0
         this.animationEnd = this.animationStart + 20
+        this.animationFrame = {
+            max :0,
+            right:4,
+            left:0,
+            elapsed:0
+        }
 
     }
     attack(){
-        if (character.direction === 'left'){
-            this.position.x = (character.position.x - this.width)
-        }else{
-            this.position.x = (character.position.x + character.width)
+        if(this.animation){
+            if (character.direction === 'right'){
+                this.position.x = (character.position.x + character.width)
+                this.shape = this.sprites.right
+                ctx.drawImage(
+                    this.shape,
+                    this.shape.width / 5 * this.animationFrame.right,
+                    0,
+                    this.shape.width / 5,
+                    this.shape.height,
+                    this.position.x,
+                    this.position.y,
+                    this.width,
+                    this.height,)
+                this.animationFrame.elapsed ++
+                if (this.animationFrame.elapsed % 3 === 0){                   
+                    if(this.animationFrame.right > 1){
+                        this.animationFrame.right --
+                    }else{
+                        this.animationFrame.right = 4
+                    }
+                }
+
+            }else{
+                this.position.x = (character.position.x - this.width)
+                this.shape = this.sprites.left
+                ctx.drawImage(
+                    this.shape,
+                    this.shape.width / 5 * this.animationFrame.left,
+                    0,
+                    this.shape.width / 5,
+                    this.shape.height,
+                    this.position.x,
+                    this.position.y,
+                    this.width,
+                    this.height,)
+                this.animationFrame.elapsed ++
+                if (this.animationFrame.elapsed % 3 === 0){   
+                    if(this.animationFrame.left < 4){
+                        this.animationFrame.left ++
+                    }else{
+                        this.animationFrame.left = 0
+                    }
+                }
+            }    
         }
-        ctx.drawImage(
-            this.shape,
-            0,
-            0,
-            this.shape.width,
-            this.shape.height,
-            this.position.x,
-            this.position.y,
-            this.width,
-            this.height,) 
     }                    
 }
 
