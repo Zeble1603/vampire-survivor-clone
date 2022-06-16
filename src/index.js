@@ -83,7 +83,17 @@ const armorBuff = new ArmorBuff('Flute',armorBuffImage)
 
 const speedBuff = new SpeedBuff('Horn',speedBuffImage)
 
-//Lists
+//Lists, variables
+let seconds = 0
+let minutes = 0
+let secondsToWrite
+let minutesToWrite
+let intervalTimer
+
+let skillSelection = ""
+let choiceList = []
+const skills = [damageBuff,rangeBuff,cooldownBuff,armorBuff,speedBuff]
+
 let enemies = {}
 let loots = {}
 let game = {
@@ -99,10 +109,6 @@ const keys = {
     left : false, 
 }
 
-const skills = [damageBuff,rangeBuff,cooldownBuff,armorBuff,speedBuff]
-
-let choiceList = []
-let skillSelection = ""
 
 //Functions
 function toggleScreen(id,toggle){
@@ -118,6 +124,7 @@ function startGame(){
     game.active = true
     game.over = false
     game.lvlUpScreen = false
+    addToChrono()
     animate()
     generateVilain()
 }
@@ -125,6 +132,9 @@ function startGame(){
 function endGame(){
     let bodyElem = document.querySelector('body')
     bodyElem.style.backgroundColor = 'red'
+    clearTimeout(intervalTimer)
+    seconds = 0
+    minutes = 0
     enemies = {}
     loots = {}
     ctx = null
@@ -142,8 +152,35 @@ function reStart(){
     toggleScreen('canvas',true)
     character.reset()
     game.active = true
+    addToChrono()
     animate()
     generateVilain()
+}
+
+function tick(){
+    seconds++;
+    if (seconds >= 60) {
+        seconds = 0;
+        minutes++;
+    }
+}
+
+function addToChrono() {
+    tick();
+    secondsToWrite = (seconds<10) ? `0${seconds}` : `${seconds}`
+    minutesToWrite = (minutes<10) ? `0${minutes}` : `${minutes}`
+    timer();
+}
+
+function timer() {
+    intervalTimer = setTimeout(addToChrono, 1000);
+}
+
+function drawTimer(){
+    ctx.font = '32px Gothic';
+    ctx.fillStyle = "white";
+    ctx.textAlign = "center";
+    ctx.fillText(`${minutesToWrite}:${secondsToWrite}`, 1200, 200);
 }
 
 function generateVilain() {
@@ -287,9 +324,11 @@ function lvlUp() {
         skillSelection.applyBuff(character)
         choiceList = []
         skillSelection = ""
+        addToChrono()
         generateVilain()
         animate()
     }else{
+        clearInterval(intervalTimer)
         character.stats.pv += character.stats.pvMax * 25/100
         if(character.stats.pv > character.stats.pvMax){
             character.stats.pv = character.stats.pvMax
@@ -372,19 +411,6 @@ function drawLvlUpScreen(){
     ctx.fillStyle = "white";
     ctx.textAlign = "start";
     ctx.fillText(`${secondOption.description}`, (canvas.width/2 - 162), (canvas.height/2 + 80)); 
-    
-    /*window.addEventListener('keydown', (e)=>{
-        switch (e.key) {
-            case "w":
-                skillSelection = firstOption,
-                selector.position.y = canvas.height/2 - 90
-                break;  
-            case "s":
-                skillSelection = secondOption,
-                selector.position.y = canvas.height/2 + 70
-                break;   
-        }
-    })*/
 }
 
 function drawStats(){
@@ -400,7 +426,7 @@ function animate() {
     let currentFrame = window.requestAnimationFrame(animate)
     background.draw()
     drawStats()
-
+    drawTimer()
     //Character
     character.move()
     character.moving = false
