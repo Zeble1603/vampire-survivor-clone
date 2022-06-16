@@ -25,7 +25,7 @@ const charaImageLeftRed = new Image()
 charaImageLeftRed.src = './src/img/chara/red_hero_left.png'
 
 const vilainImage = new Image()
-vilainImage.src = './src/img/vilains/big_demon_idle_anim_f0.png'
+vilainImage.src = './src/img/vilains/red.png'
 
 const attackRightImage = new Image()
 attackRightImage.src = './src/img/attack/right/attackRight.png'
@@ -213,21 +213,21 @@ function generateVilain() {
     let counter = 1
 
     let intervalVilainId = setInterval(() => {
-        let scenario = Math.floor(Math.random() * 4);
+        let scenario = Math.floor(Math.random() * 5);
         let randomPositionX = Math.floor(Math.random() * canvas.width);
         let randomPositionY = Math.floor(Math.random() * canvas.height);
         switch (scenario) {
             case 2:
-                enemies[`red${counter}`] = new Enemy(32,36,vilainImage,{x:canvas.width, y:randomPositionY},10,1)   
+                enemies[`red${counter}`] = new Enemy(32,56,vilainImage,{x:canvas.width, y:randomPositionY},10,1)   
                 break;
             case 3:
-                enemies[`red${counter}`] = new Enemy(32,36,vilainImage,{x:randomPositionX, y:canvas.height},10,1)
+                enemies[`red${counter}`] = new Enemy(32,56,vilainImage,{x:randomPositionX, y:canvas.height},10,1)
                 break;   
             case 4:
-                enemies[`red${counter}`] = new Enemy(32,36,vilainImage,{x:0, y:randomPositionY},10,1) 
+                enemies[`red${counter}`] = new Enemy(32,56,vilainImage,{x:0, y:randomPositionY},10,1) 
                 break;  
             default:
-                enemies[`red${counter}`] = new Enemy(32,36,vilainImage,{x:randomPositionX, y:0},10,1)       
+                enemies[`red${counter}`] = new Enemy(32,56,vilainImage,{x:randomPositionX, y:0},10,1)       
                 break;
         }
         counter ++
@@ -482,7 +482,6 @@ function animate() {
         swordAttach.animationStart = currentFrame
     }
     
-
     if (currentFrame === swordAttach.animationStart + 15){
         swordAttach.animation = false
     }

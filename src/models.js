@@ -130,9 +130,31 @@ class Enemy extends Sprite{
         super(height,width,shape,position)
         this.pv = pv
         this.strenght = strenght
+        this.animationFrame = {
+            max :0,
+            val:3,
+            elapsed:0
+        }
     }
     draw(){
-        ctx.drawImage(this.shape,this.position.x,this.position.y,this.width,this.height)
+        ctx.drawImage(
+            this.shape,
+            this.shape.width / 8 * this.animationFrame.val,
+            0,
+            this.shape.width / 8,
+            this.shape.height,
+            this.position.x,
+            this.position.y,
+            this.width,
+            this.height)
+        this.animationFrame.elapsed ++    
+        if (this.animationFrame.elapsed % 10 === 0){
+            if(this.animationFrame.val < 7){
+                this.animationFrame.val ++
+            }else{
+                this.animationFrame.val = 3
+            }
+        }
     }
 
     move(){
