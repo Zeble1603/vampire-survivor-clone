@@ -29,7 +29,7 @@ const attackRightImage = new Image()
 attackRightImage.src = './src/img/attack/right/attackRight.png'
 
 const attackLeftImage = new Image()
-attackLeftImage.src = '/src/img/attack/left/attackLeft.png'
+attackLeftImage.src = './src/img/attack/left/attackLeft.png'
 
 //Vilains images
 const vilainImage = new Image()
