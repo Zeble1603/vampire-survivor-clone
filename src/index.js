@@ -50,6 +50,9 @@ armorBuffImage.src = './src/img/items/buff4.png'
 const speedBuffImage = new Image()
 speedBuffImage.src = './src/img/items/buff5.png'
 
+const healthBuffImage = new Image()
+healthBuffImage.src = './src/img/items/heart.png'
+
 //Objects
 const background = new Sprite(
     7000,6860,bgImage,{x:-2560,y:-2026}
@@ -83,6 +86,8 @@ const armorBuff = new ArmorBuff('Flute',armorBuffImage)
 
 const speedBuff = new SpeedBuff('Horn',speedBuffImage)
 
+const healthBuff = new HealthBuff('Heart', healthBuffImage)
+
 //Lists, variables
 let seconds = 0
 let minutes = 0
@@ -92,7 +97,7 @@ let intervalTimer
 
 let skillSelection = ""
 let choiceList = []
-const skills = [damageBuff,rangeBuff,cooldownBuff,armorBuff,speedBuff]
+const skills = [healthBuff,damageBuff,rangeBuff,cooldownBuff,armorBuff,speedBuff]
 
 let enemies = {}
 let loots = {}
@@ -247,14 +252,14 @@ function checkCollisionOnPlayer(enemy,player){
         if(enemy.position.y + enemy.height >= player.position.y
             && enemy.position.y <= player.position.y){
                 player.touched = true
-                player.stats.pv -= enemy.strenght
+                player.stats.pv -= enemy.strenght - (enemy.strenght * player.stats.armor / 100)
                 if (player.stats.pv <= 0){
                     endGame()  
                 } 
         }else if(enemy.position.y <= player.position.y + player.height
             && enemy.position.y >= player.position.y){
                 player.touched = true
-                player.stats.pv -= enemy.strenght
+                player.stats.pv -= enemy.strenght - (enemy.strenght * player.stats.armor / 100)
                 if (player.stats.pv <= 0){
                     endGame()  
                 } 
@@ -497,16 +502,16 @@ function animate() {
     for (const item in loots){
         loots[item].draw()
         if(keys.up){
-            loots[item].position.y += 2
+            loots[item].position.y += (2 * character.speed)
         }
         if(keys.right){
-            loots[item].position.x -= 2
+            loots[item].position.x -= (2 * character.speed)
         }
         if(keys.down){
-            loots[item].position.y -= 2
+            loots[item].position.y -= (2 * character.speed)
         }
         if(keys.left){
-            loots[item].position.x += 2
+            loots[item].position.x += (2 * character.speed)
         }
     }
     checkCollisionWithitems(loots,character)

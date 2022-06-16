@@ -212,7 +212,7 @@ class Sword extends Weapon{
         if (character.direction === 'left'){
             this.position.x = (character.position.x - this.width)
         }else{
-            this.position.x = (character.position.x)
+            this.position.x = (character.position.x + character.width)
         }
         ctx.drawImage(
             this.shape,
@@ -253,13 +253,13 @@ class RangeBuff extends Skills{
     constructor(name,image){
         super(name,image)
         this.lvl = 1
-        this.value = 1
+        this.value = 2
         this.description = `Increases weapon range by ${this.value} per rank`
     }
     applyBuff(player){
         for (let attack of player.weapons){
             attack.width += this.value
-            attack.height += this.height
+            attack.height += this.value
         }
     }
 }
@@ -268,7 +268,7 @@ class CoolDownBuff extends Skills{
     constructor(name,image){
         super(name,image)
         this.lvl = 1
-        this.value = 2
+        this.value = 5
         this.description = `Reduces weapon cooldown by ${this.value} frame per rank`
     }
     applyBuff(player){
@@ -302,7 +302,7 @@ class SpeedBuff extends Skills{
     }
 }
 
-class healthBuff extends Skills{
+class HealthBuff extends Skills{
     constructor(name,image){
         super(name,image)
         this.lvl = 1
