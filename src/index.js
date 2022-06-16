@@ -24,14 +24,29 @@ charaImageRed.src = './src/img/chara/red_hero_right.png'
 const charaImageLeftRed = new Image()
 charaImageLeftRed.src = './src/img/chara/red_hero_left.png'
 
-const vilainImage = new Image()
-vilainImage.src = './src/img/vilains/red.png'
 
 const attackRightImage = new Image()
 attackRightImage.src = './src/img/attack/right/attackRight.png'
 
 const attackLeftImage = new Image()
 attackLeftImage.src = '/src/img/attack/left/attackLeft.png'
+
+//Vilains images
+const vilainImage = new Image()
+vilainImage.src = './src/img/vilains/miniOrc.png'
+
+const miniRedImage = new Image()
+miniRedImage.src = './src/img/vilains/miniRed.png'
+
+const orcImage = new Image()
+orcImage.src = './src/img/vilains/orc.png'
+
+const frankImage = new Image()
+frankImage.src = './src/img/vilains/frank.png'
+
+const redImage = new Image()
+redImage.src = './src/img/vilains/red.png'
+
 
 //Items images
 const hpImage = new Image()
@@ -185,7 +200,7 @@ function tick(){
         seconds = 0;
         minutes++;
     }
-    if(minutes === 10){
+    if(minutes === 5){
         game.victory = true
         endGame()
     }
@@ -218,16 +233,88 @@ function generateVilain() {
         let randomPositionY = Math.floor(Math.random() * canvas.height);
         switch (scenario) {
             case 2:
-                enemies[`red${counter}`] = new Enemy(32,56,vilainImage,{x:canvas.width, y:randomPositionY},10,1)   
+                if(minutes<1){
+                    enemies[`red${counter}`] = new Enemy(32,56,vilainImage,{x:canvas.width, y:randomPositionY},10,1)   
+                }
+                if(minutes>=1){
+                    randomPositionY = Math.floor(Math.random() * canvas.height);
+                    enemies[`miniRed${counter}`] = new Enemy(32,56,miniRedImage,{x:canvas.width, y:randomPositionY},15,2)
+                    if(minutes>=2){
+                        randomPositionY = Math.floor(Math.random() * canvas.height);
+                        enemies[`orc${counter}`] = new Enemy(39,67,orcImage,{x:canvas.width, y:randomPositionY},20,3)
+                        if(minutes>=3){
+                            randomPositionY = Math.floor(Math.random() * canvas.height);
+                            enemies[`frank${counter}`] = new Enemy(39,67,frankImage,{x:canvas.width, y:randomPositionY},25,3)
+                            if(minutes>=4){
+                                randomPositionY = Math.floor(Math.random() * canvas.height);
+                                enemies[`red${counter}`] = new Enemy(48,84,redImage,{x:canvas.width, y:randomPositionY},30,4)
+                            }
+                        }
+                    }
+                }
                 break;
             case 3:
-                enemies[`red${counter}`] = new Enemy(32,56,vilainImage,{x:randomPositionX, y:canvas.height},10,1)
+                if(minutes<1){
+                    enemies[`red${counter}`] = new Enemy(32,56,vilainImage,{x:randomPositionX, y:canvas.height},10,1)
+                }
+                if(minutes>=1){
+                    randomPositionX = Math.floor(Math.random() * canvas.width);
+                    enemies[`miniRed${counter}`] = new Enemy(32,56,miniRedImage,{x:randomPositionX, y:canvas.height},15,2)
+                    if(minutes>=2){
+                        randomPositionX = Math.floor(Math.random() * canvas.width);
+                        enemies[`orc${counter}`] = new Enemy(39,67,orcImage,{x:randomPositionX, y:canvas.height},20,3)
+                        if(minutes>=3){
+                            randomPositionX = Math.floor(Math.random() * canvas.width);
+                            enemies[`frank${counter}`] = new Enemy(39,67,frankImage,{x:randomPositionX, y:canvas.height},25,3)
+                            if(minutes>=4){
+                                randomPositionX = Math.floor(Math.random() * canvas.width);
+                                enemies[`red${counter}`] = new Enemy(48,84,redImage,{x:randomPositionX, y:canvas.height},30,4)
+                            }
+                        }
+                    }
+                }
                 break;   
             case 4:
-                enemies[`red${counter}`] = new Enemy(32,56,vilainImage,{x:0, y:randomPositionY},10,1) 
+                if(minutes<1){
+                    enemies[`red${counter}`] = new Enemy(32,56,vilainImage,{x:0, y:randomPositionY},10,1) 
+                }
+                if(minutes>=1){
+                    randomPositionY = Math.floor(Math.random() * canvas.height);
+                    enemies[`miniRed${counter}`] = new Enemy(32,56,miniRedImage,{x:0, y:randomPositionY},15,2)
+                    if(minutes>=2){
+                        randomPositionY = Math.floor(Math.random() * canvas.height);
+                        enemies[`orc${counter}`] = new Enemy(39,67,orcImage,{x:0, y:randomPositionY},20,3)
+                        if(minutes>=3){
+                            randomPositionY = Math.floor(Math.random() * canvas.height);
+                            enemies[`frank${counter}`] = new Enemy(39,67,frankImage,{x:0, y:randomPositionY},25,3)
+                            if(minutes>=4){
+                                randomPositionY = Math.floor(Math.random() * canvas.height);
+                                enemies[`red${counter}`] = new Enemy(48,84,redImage,{x:0, y:randomPositionY},30,4)
+                            }
+                        }
+                    }
+                }
                 break;  
             default:
-                enemies[`red${counter}`] = new Enemy(32,56,vilainImage,{x:randomPositionX, y:0},10,1)       
+                if(minutes<1){
+                    enemies[`red${counter}`] = new Enemy(32,56,vilainImage,{x:randomPositionX, y:0},10,1)    
+                }
+                if(minutes>=1){
+                    randomPositionX = Math.floor(Math.random() * canvas.width);
+                    enemies[`miniRed${counter}`] = new Enemy(32,56,miniRedImage,{x:randomPositionX, y:0},15,2)
+                    if(minutes>2){
+                        randomPositionX = Math.floor(Math.random() * canvas.width);
+                        enemies[`orc${counter}`] = new Enemy(39,67,orcImage,{x:randomPositionX, y:0},20,3)
+                        if(minutes>=3){
+                            randomPositionX = Math.floor(Math.random() * canvas.width);
+                            enemies[`frank${counter}`] = new Enemy(39,67,frankImage,{x:randomPositionX, y:0},25,3)
+                            if(minutes>=4){
+                                randomPositionX = Math.floor(Math.random() * canvas.width);
+                                enemies[`red${counter}`] = new Enemy(48,84,redImage,{x:randomPositionX, y:0},30,4)
+                            }
+                        }
+                    }
+                }   
                 break;
         }
         counter ++

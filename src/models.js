@@ -328,7 +328,7 @@ class CoolDownBuff extends Skills{
     constructor(name,image){
         super(name,image)
         this.lvl = 1
-        this.value = 5
+        this.value = 10
         this.description = `Reduces weapon cooldown by ${this.value} frame per rank`
     }
     applyBuff(player){
